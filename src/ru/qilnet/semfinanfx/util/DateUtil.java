@@ -1,4 +1,4 @@
-package ru.qilnet.semfinan.util;
+package ru.qilnet.semfinanfx.util;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;

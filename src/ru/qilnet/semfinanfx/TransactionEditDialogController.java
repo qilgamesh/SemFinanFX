@@ -1,11 +1,11 @@
-package ru.qilnet.semfinan;
+package ru.qilnet.semfinanfx;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import ru.qilnet.semfinan.model.Transaction;
-import ru.qilnet.semfinan.util.DateUtil;
+import ru.qilnet.semfinanfx.model.Transaction;
+import ru.qilnet.semfinanfx.util.DateUtil;
 
 /**
  * Dialog to edit details of a transaction

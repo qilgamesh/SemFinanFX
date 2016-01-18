@@ -1,4 +1,4 @@
-package ru.qilnet.semfinan.model;
+package ru.qilnet.semfinanfx.model;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;

@@ -1,23 +1,23 @@
-package ru.qilnet.semfinan;
+package ru.qilnet.semfinanfx;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import ru.qilnet.semfinan.model.Transaction;
-import ru.qilnet.semfinan.util.DateUtil;
+import ru.qilnet.semfinanfx.model.Transaction;
+import ru.qilnet.semfinanfx.util.DateUtil;
 
 /**
  * @author Andrey Semenyuk
  */
-public class CreditTransactionOverviewController {
+public class DebitTransactionOverviewController {
 	@FXML
-	private TableView<Transaction> creditTransactionTable;
+	private TableView<Transaction> debitTransactionTable;
 	@FXML
-	private TableColumn<Transaction, String> creditDescriptionColumn;
+	private TableColumn<Transaction, String> debitDescriptionColumn;
 	@FXML
-	private TableColumn<Transaction, String> creditSumColumn;
+	private TableColumn<Transaction, String> debitSumColumn;
 	@FXML
 	private Label descriptionLabel;
 	@FXML
@@ -32,7 +32,7 @@ public class CreditTransactionOverviewController {
 	 * The constructor.
 	 * The constructor is called before the initialize() method.
 	 */
-	public CreditTransactionOverviewController() {
+	public DebitTransactionOverviewController() {
 	}
 
 	/**
@@ -42,14 +42,14 @@ public class CreditTransactionOverviewController {
 	@FXML
 	private void initialize() {
 		// Initialize the transaction table with the two columns.
-		creditDescriptionColumn.setCellValueFactory(cellData -> cellData.getValue().descriptionProperty());
-		creditSumColumn.setCellValueFactory(cellData -> cellData.getValue().sumProperty());
+		debitDescriptionColumn.setCellValueFactory(cellData -> cellData.getValue().descriptionProperty());
+		debitSumColumn.setCellValueFactory(cellData -> cellData.getValue().sumProperty());
 
 		// Clear transaction details.
 		showTransactionDetails(null);
 
 		// Listen for selection changes and show the transaction details when changed.
-		creditTransactionTable.getSelectionModel().selectedItemProperty().addListener(
+		debitTransactionTable.getSelectionModel().selectedItemProperty().addListener(
 				(observable, oldValue, newValue) -> showTransactionDetails(newValue));
 	}
 
@@ -62,7 +62,7 @@ public class CreditTransactionOverviewController {
 		this.mainApp = mainApp;
 
 		// Add observable list data to the table
-		creditTransactionTable.setItems(mainApp.getTransactionData());
+		debitTransactionTable.setItems(mainApp.getTransactionData());
 	}
 
 	/**
@@ -86,15 +86,14 @@ public class CreditTransactionOverviewController {
 		}
 	}
 
-
 	/**
 	 * Called when the user clicks on the delete button.
 	 */
 	@FXML
 	private void handleDeleteTransaction() {
-		int selectedIndex = creditTransactionTable.getSelectionModel().getSelectedIndex();
+		int selectedIndex = debitTransactionTable.getSelectionModel().getSelectedIndex();
 		if (selectedIndex >= 0) {
-			creditTransactionTable.getItems().remove(selectedIndex);
+			debitTransactionTable.getItems().remove(selectedIndex);
 		} else {
 			// Nothing selected.
 			Alert alert = new Alert(Alert.AlertType.WARNING);
@@ -102,6 +101,7 @@ public class CreditTransactionOverviewController {
 			alert.setTitle("Ничего не выбрано");
 			alert.setHeaderText("Не выбрана транзакция");
 			alert.setContentText("Пожалуйста, выберите транзакцию");
+
 			alert.showAndWait();
 		}
 	}
@@ -125,7 +125,7 @@ public class CreditTransactionOverviewController {
 	 */
 	@FXML
 	private void handleEditTransaction() {
-		Transaction selectedTransaction = creditTransactionTable.getSelectionModel().getSelectedItem();
+		Transaction selectedTransaction = debitTransactionTable.getSelectionModel().getSelectedItem();
 		if (selectedTransaction != null) {
 			boolean okClicked = mainApp.showTransactionEditDialog(selectedTransaction);
 			if (okClicked) {

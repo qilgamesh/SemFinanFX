@@ -1,4 +1,4 @@
-package ru.qilnet.semfinan;
+package ru.qilnet.semfinanfx;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -10,7 +10,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import ru.qilnet.semfinan.model.Transaction;
+import ru.qilnet.semfinanfx.model.Transaction;
 
 import java.io.IOException;
 
