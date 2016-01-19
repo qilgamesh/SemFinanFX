@@ -12,7 +12,9 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import ru.qilnet.semfinanfx.model.Transaction;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.prefs.Preferences;
 
 public class MainApp extends Application {
 
@@ -47,7 +49,7 @@ public class MainApp extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
         this.primaryStage = primaryStage;
-        this.primaryStage.setTitle("TestApp");
+        this.primaryStage.setTitle("SemFinanFX");
         initRootLayout();
         showAllTableOverview();
     }
@@ -137,6 +139,67 @@ public class MainApp extends Application {
 			e.printStackTrace();
 			return false;
 		}
+	}
+
+	/**
+	 * Returns the SemFinanFX file preference, i.e. the file that was last opened.
+	 * The preference is read from the OS specific registry. If no such
+	 * preference can be found, null is returned.
+	 *
+	 * @return
+	 */
+	public File getTransactionFilePath() {
+		Preferences prefs = Preferences.userNodeForPackage(MainApp.class);
+		String filePath = prefs.get("filePath", null);
+		if (filePath != null) {
+			return new File(filePath);
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * Sets the file path of the currently loaded file. The path is persisted in
+	 * the OS specific registry.
+	 *
+	 * @param file the file or null to remove the path
+	 */
+	public void setTransactionFilePath(File file) {
+		Preferences prefs = Preferences.userNodeForPackage(MainApp.class);
+		if (file != null) {
+			prefs.put("filePath", file.getPath());
+
+			// Update the stage title.
+			primaryStage.setTitle("AddressApp - " + file.getName());
+		} else {
+			prefs.remove("filePath");
+
+			// Update the stage title.
+			primaryStage.setTitle("AddressApp");
+		}
+	}
+
+	/**
+	 * Loads SemFinanFX data from the specified file. The current SemFinanFX data will
+	 * be replaced.
+	 *
+	 * @param file
+	 *
+	 * TODO SemFinanFX load
+	 */
+	public void loadSemFinanDB(File file) {
+
+	}
+
+	/**
+	 * Saves the current SemFinanFX data to the specified file.
+	 *
+	 * @param file
+	 *
+	 * TODO SemFinanFX save
+	 */
+	public void saveSemFinanDB(File file) {
+
 	}
 
     public static void main(String[] args) {
