@@ -29,11 +29,11 @@ public class MainApp extends Application {
      */
     public MainApp() {
         // Add some sample data
-        transactionData.add(new Transaction("Начальный остаток", "1000"));
-        transactionData.add(new Transaction("Зарплата", "20000"));
-        transactionData.add(new Transaction("Шабашка", "1000"));
-        transactionData.add(new Transaction("Подарок", "1000"));
-        transactionData.add(new Transaction("Премия", "5000"));
+        transactionData.add(new Transaction("01", "Начальный остаток", "1000"));
+        transactionData.add(new Transaction("05", "Зарплата", "20000"));
+        transactionData.add(new Transaction("06", "Шабашка", "1000"));
+        transactionData.add(new Transaction("07", "Подарок", "1000"));
+        transactionData.add(new Transaction("15", "Премия", "5000"));
     }
 
     /**

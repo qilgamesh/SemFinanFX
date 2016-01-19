@@ -1,19 +1,22 @@
 package ru.qilnet.semfinanfx;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import ru.qilnet.semfinanfx.model.Transaction;
 import ru.qilnet.semfinanfx.util.DateUtil;
+
+import java.time.LocalDate;
 
 /**
  * @author Andrey Semenyuk
  */
 public class CreditTransactionOverviewController {
 	@FXML
+	private ChoiceBox<String> monthChoice;
+	@FXML
 	private TableView<Transaction> creditTransactionTable;
+	@FXML
+	private TableColumn<Transaction, String> creditDayColumn;
 	@FXML
 	private TableColumn<Transaction, String> creditDescriptionColumn;
 	@FXML
@@ -42,6 +45,7 @@ public class CreditTransactionOverviewController {
 	@FXML
 	private void initialize() {
 		// Initialize the transaction table with the two columns.
+		creditDayColumn.setCellValueFactory(cellData -> cellData.getValue().dayOfMonthProperty());
 		creditDescriptionColumn.setCellValueFactory(cellData -> cellData.getValue().descriptionProperty());
 		creditSumColumn.setCellValueFactory(cellData -> cellData.getValue().sumProperty());
 
@@ -51,6 +55,9 @@ public class CreditTransactionOverviewController {
 		// Listen for selection changes and show the transaction details when changed.
 		creditTransactionTable.getSelectionModel().selectedItemProperty().addListener(
 				(observable, oldValue, newValue) -> showTransactionDetails(newValue));
+
+		monthChoice.setItems(DateUtil.getListOfMonths());
+		monthChoice.setValue(DateUtil.getMonthName(LocalDate.now()));
 	}
 
 	/**
@@ -74,10 +81,9 @@ public class CreditTransactionOverviewController {
 	private void showTransactionDetails(Transaction transaction) {
 		if (transaction != null) {
 			// Fill the labels with info from the transaction object.
+			dayLabel.setText(transaction.getDayOfMonth());
 			descriptionLabel.setText(transaction.getDescription());
 			sumLabel.setText(transaction.getSum() + "руб.");
-			dayLabel.setText(DateUtil.format(transaction.getDay()));
-
 		} else {
 			// transaction is null, remove all the text.
 			descriptionLabel.setText("");

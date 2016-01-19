@@ -6,7 +6,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import ru.qilnet.semfinanfx.model.Transaction;
-import ru.qilnet.semfinanfx.util.DateUtil;
 
 /**
  * @author Andrey Semenyuk
@@ -76,7 +75,7 @@ public class DebitTransactionOverviewController {
 			// Fill the labels with info from the transaction object.
 			descriptionLabel.setText(transaction.getDescription());
 			sumLabel.setText(transaction.getSum() + "руб.");
-			dayLabel.setText(DateUtil.format(transaction.getDay()));
+			dayLabel.setText(transaction.getDayOfMonth());
 
 		} else {
 			// transaction is null, remove all the text.

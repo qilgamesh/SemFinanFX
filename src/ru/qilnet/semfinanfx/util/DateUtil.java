@@ -1,5 +1,8 @@
 package ru.qilnet.semfinanfx.util;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -11,12 +14,47 @@ import java.time.format.DateTimeParseException;
  */
 public class DateUtil {
 
+	/** Array of month's name in Russian */
+	private static final String[] months = {
+			"Январь",
+			"Февраль",
+			"Март",
+			"Апрель",
+			"Май",
+			"Июнь",
+			"Июль",
+			"Август",
+			"Сентябрь",
+			"Октябрь",
+			"Ноябрь",
+			"Декабрь",
+	};
+
 	/** The date pattern that is used for conversion. Change as you wish. */
 	private static final String DATE_PATTERN = "dd.MM.yyyy";
 
 	/** The date formatter. */
 	private static final DateTimeFormatter DATE_FORMATTER =
 			DateTimeFormatter.ofPattern(DATE_PATTERN);
+
+	/**
+	 * Returns the list of months
+	 *
+	 * @return
+	 */
+	public static ObservableList<String> getListOfMonths() {
+		return FXCollections.observableArrayList(months);
+	}
+
+	/**
+	 * Returns the name of given month
+	 *
+	 * @param date
+	 * @return string
+	 */
+	public static String getMonthName(LocalDate date) {
+		return months[date.getMonthValue()-1];
+	}
 
 	/**
 	 * Returns the given date as a well formatted String. The above defined

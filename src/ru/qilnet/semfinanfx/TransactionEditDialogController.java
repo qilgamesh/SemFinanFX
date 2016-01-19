@@ -72,7 +72,7 @@ public class TransactionEditDialogController {
 		if (isInputValid()) {
 			transaction.setDescription(descriptionField.getText());
 			transaction.setSum(sumField.getText());
-			transaction.setDay(DateUtil.parse(dayField.getText()));
+			transaction.setDayOfMonth(dayField.getText());
 
 			okClicked = true;
 			dialogStage.close();

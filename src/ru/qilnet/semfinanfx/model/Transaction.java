@@ -1,8 +1,9 @@
 package ru.qilnet.semfinanfx.model;
 
-import javafx.beans.property.*;
-
-import java.time.LocalDate;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 
 /**
  * Model class for a Transaction.
@@ -10,39 +11,42 @@ import java.time.LocalDate;
  * @author Andrey Semenyuk
  */
 public class Transaction {
+//	private final StringProperty date;
 	private final StringProperty description;
 	private final StringProperty sum;
-	private final ObjectProperty<LocalDate> day;
+	private final StringProperty dayOfMonth;
 	private final BooleanProperty scheduled;
 
 	/**
 	 * Default constructor.
 	 */
 	public Transaction() {
-		this(null, null, false);
+		this(null, null, null, false);
 	}
 
 	/**
-	 * Constructor with some initial data.
+	 * Constructor with some initial data with default value of scheduled.
 	 *
+	 * @param dayOfMonth
 	 * @param description
 	 * @param sum
 	 */
-	public Transaction(String description, String sum) {
-		this(description, sum, false);
+	public Transaction(String dayOfMonth, String description, String sum) {
+		this(dayOfMonth, description, sum, false);
 	}
 
 	/**
 	 * Constructor with some initial data.
 	 *
+	 * @param dayOfMonth
 	 * @param description
 	 * @param sum
 	 * @param scheduled
 	 */
-	public Transaction(String description, String sum, boolean scheduled) {
+	public Transaction(String dayOfMonth, String description, String sum, boolean scheduled) {
+		this.dayOfMonth = new SimpleStringProperty(dayOfMonth);
 		this.description = new SimpleStringProperty(description);
 		this.sum = new SimpleStringProperty(sum);
-		this.day = new SimpleObjectProperty<>(LocalDate.now());
 		this.scheduled = new SimpleBooleanProperty(scheduled);
 	}
 
@@ -70,16 +74,20 @@ public class Transaction {
 		return sum;
 	}
 
-	public LocalDate getDay() {
-		return day.get();
+	public String getDayOfMonth() {
+		return dayOfMonth.get();
 	}
 
-	public void setDay(LocalDate day) {
-		this.day.set(day);
+	public void setDayOfMonth(String day) {
+		dayOfMonth.set(day);
 	}
 
-	public ObjectProperty<LocalDate> dayProperty() {
-		return day;
+	public void setDayOfMonth(int day) {
+		dayOfMonth.set(String.valueOf(day));
+	}
+
+	public StringProperty dayOfMonthProperty() {
+		return dayOfMonth;
 	}
 
 	public boolean isScheduled() {

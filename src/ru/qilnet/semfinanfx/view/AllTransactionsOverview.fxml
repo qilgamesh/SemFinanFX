@@ -11,7 +11,7 @@
       <HBox>
          <children>
             <Pane HBox.hgrow="ALWAYS" />
-            <ChoiceBox prefWidth="150.0" />
+            <ChoiceBox fx:id="monthChoice" prefWidth="150.0" />
          </children>
       </HBox>
       <GridPane alignment="CENTER" prefHeight="385.0" prefWidth="600.0" VBox.vgrow="ALWAYS">
@@ -28,7 +28,7 @@
          <children>
             <TableView fx:id="creditTransactionTable" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
                <columns>
-                  <TableColumn prefWidth="55.0" text="День" />
+                  <TableColumn fx:id="creditDayColumn" prefWidth="55.0" text="День" />
                   <TableColumn fx:id="creditDescriptionColumn" prefWidth="119.0" text="Описание" />
                   <TableColumn fx:id="creditSumColumn" text="Сумма" />
                </columns>
@@ -38,9 +38,9 @@
             </TableView>
             <TableView prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="2">
                <columns>
-                  <TableColumn prefWidth="55.0" text="День" />
-                  <TableColumn prefWidth="119.0" text="Описание" />
-                  <TableColumn text="Сумма" />
+                  <TableColumn prefWidth="55.0" text="=====" />
+                  <TableColumn prefWidth="119.0" text="=====" />
+                  <TableColumn text="5000" />
                </columns>
                <columnResizePolicy>
                   <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
