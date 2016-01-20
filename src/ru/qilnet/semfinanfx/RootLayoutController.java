@@ -1,6 +1,7 @@
 package ru.qilnet.semfinanfx;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.stage.FileChooser;
 
 import java.io.File;
@@ -50,13 +51,9 @@ public class RootLayoutController {
 		// Show save file dialog
 		File file = fileChooser.showOpenDialog(mainApp.getPrimaryStage());
 
-		/**
-		 * TODO open SemFinanFX DataBase method
-
 		if (file != null) {
 			mainApp.loadSemFinanDB(file);
 		}
-		 */
 	}
 
 	/**
@@ -67,13 +64,11 @@ public class RootLayoutController {
 	private void handleSave() {
 		File sfdbFile = mainApp.getTransactionFilePath();
 
-		/** TODO Save SemFinanFX DataBase method
-		if (personFile != null) {
+		if (sfdbFile != null) {
 			mainApp.saveSemFinanDB(sfdbFile);
 		} else {
 			handleSaveAs();
 		}
-		 */
 	}
 
 	/**
@@ -96,26 +91,19 @@ public class RootLayoutController {
 			if (!file.getPath().endsWith(".sfdb")) {
 				file = new File(file.getPath() + ".sfdb");
 			}
-			/** TODO Save SemFinanFX DataBase method
 			mainApp.saveSemFinanDB(file);
-			 */
 		}
 	}
 
-	/**
-	 * TODO Opens an about dialog.
-	 *
-
 	@FXML
 	private void handleAbout() {
-		Dialogs.create()
-				.title("SemFinanFX")
-				.masthead("About")
-				.message("Author: Andrey Semenyuk\nMailTo: andrey@qilnet.ru")
-				.showInformation();
+		Alert alert = new Alert(Alert.AlertType.INFORMATION);
+		alert.setTitle("SemFinanFX");
+		alert.setHeaderText(null);
+		alert.setContentText("Author: Andrey Semenyuk\nMailTo: andrey@qilnet.ru");
+		alert.showAndWait();
 	}
-	 */
-	
+
 	/**
 	 * Closes the application.
 	 */

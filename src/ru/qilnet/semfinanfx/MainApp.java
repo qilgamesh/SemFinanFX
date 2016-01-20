@@ -5,13 +5,18 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import ru.qilnet.semfinanfx.model.Transaction;
+import ru.qilnet.semfinanfx.model.TransactionListWrapper;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import java.io.File;
 import java.io.IOException;
 import java.util.prefs.Preferences;
@@ -67,10 +72,21 @@ public class MainApp extends Application {
             // Show the scene containing the root layout.
             Scene scene = new Scene(rootLayout);
             primaryStage.setScene(scene);
+
+			// Give the controller access to the main app.
+			RootLayoutController controller = loader.getController();
+			controller.setMainApp(this);
+
             primaryStage.show();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+		// Try to load last opened person file.
+		File file = getTransactionFilePath();
+		if (file != null) {
+			loadSemFinanDB(file);
+		}
     }
 
     /**
@@ -184,10 +200,29 @@ public class MainApp extends Application {
 	 * be replaced.
 	 *
 	 * @param file
-	 *
-	 * TODO SemFinanFX load
 	 */
 	public void loadSemFinanDB(File file) {
+		try {
+			JAXBContext context = JAXBContext
+					.newInstance(TransactionListWrapper.class);
+			Unmarshaller um = context.createUnmarshaller();
+
+			// Reading XML from the file and unmarshalling.
+			TransactionListWrapper wrapper = (TransactionListWrapper) um.unmarshal(file);
+
+			transactionData.clear();
+			transactionData.addAll(wrapper.getTransactions());
+
+			// Save the file path to the registry.
+			setTransactionFilePath(file);
+
+		} catch (Exception e) { // catches ANY exception
+			Alert alert = new Alert(Alert.AlertType.ERROR);
+			alert.setTitle("Ошибка");
+			alert.setHeaderText("Не удалось загрузить данные из файла:\n" + file.getPath());
+			alert.setContentText(e.toString());
+			alert.showAndWait();
+		}
 
 	}
 
@@ -195,11 +230,30 @@ public class MainApp extends Application {
 	 * Saves the current SemFinanFX data to the specified file.
 	 *
 	 * @param file
-	 *
-	 * TODO SemFinanFX save
 	 */
 	public void saveSemFinanDB(File file) {
+		try {
+			JAXBContext context = JAXBContext
+					.newInstance(TransactionListWrapper.class);
+			Marshaller m = context.createMarshaller();
+			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
+			// Wrapping our transaction data.
+			TransactionListWrapper wrapper = new TransactionListWrapper();
+			wrapper.setTransactions(transactionData);
+
+			// Marshalling and saving XML to the file.
+			m.marshal(wrapper, file);
+
+			// Save the file path to the registry.
+			setTransactionFilePath(file);
+		} catch (Exception e) { // catches ANY exception
+			Alert alert = new Alert(Alert.AlertType.ERROR);
+			alert.setTitle("Ошибка");
+			alert.setHeaderText("Не удалось сохранить данные в файл:\n" + file.getPath());
+			alert.setContentText(e.toString());
+			alert.showAndWait();
+		}
 	}
 
     public static void main(String[] args) {
