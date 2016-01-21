@@ -36,16 +36,18 @@ public class MainApp extends Application {
      */
     public MainApp() {
         // Add some sample data
-        transactionData.add(new Transaction("01", "Начальный остаток", "1000"));
+		transactionData.add(new Transaction("01", "Начальный остаток", "1000"));
+		/**
         transactionData.add(new Transaction("05", "Зарплата", "20000"));
         transactionData.add(new Transaction("06", "Шабашка", "1000"));
         transactionData.add(new Transaction("07", "Подарок", "1000"));
         transactionData.add(new Transaction("15", "Премия", "5000"));
+		 */
     }
 
     /**
      * Returns the data as an observable list of Transactions.
-     * @return
+     * @return list of transaction
      */
     public ObservableList<Transaction> getTransactionData() {
         return transactionData;
@@ -56,7 +58,7 @@ public class MainApp extends Application {
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("SemFinanFX");
         initRootLayout();
-        showAllTableOverview();
+        showTransactionTableOverview();
     }
 
     /**
@@ -92,18 +94,18 @@ public class MainApp extends Application {
     /**
      * Shows the transaction overview inside the root layout.
      */
-    public void showAllTableOverview() {
+    public void showTransactionTableOverview() {
         try {
             // Load transaction overview.
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(MainApp.class.getResource("view/AllTransactionsOverview.fxml"));
-            Pane allTransactionsOverview = loader.load();
+            loader.setLocation(MainApp.class.getResource("view/TransactionsOverview.fxml"));
+            Pane transactionsOverview = loader.load();
 
             // Set transaction overview into the center of root layout.
-            rootLayout.setCenter(allTransactionsOverview);
+            rootLayout.setCenter(transactionsOverview);
 
             // Give the controller access to the main app.
-            CreditTransactionOverviewController controller = loader.getController();
+            TransactionOverviewController controller = loader.getController();
             controller.setMainApp(this);
 
         } catch (IOException e) {
@@ -113,7 +115,7 @@ public class MainApp extends Application {
 
     /**
      * Returns the main stage.
-     * @return
+     * @return primaryStage
      */
     public Stage getPrimaryStage() {
         return primaryStage;
@@ -162,7 +164,7 @@ public class MainApp extends Application {
 	 * The preference is read from the OS specific registry. If no such
 	 * preference can be found, null is returned.
 	 *
-	 * @return
+	 * @return path of file or null if no preference
 	 */
 	public File getTransactionFilePath() {
 		Preferences prefs = Preferences.userNodeForPackage(MainApp.class);

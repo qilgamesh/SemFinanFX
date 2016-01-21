@@ -5,6 +5,8 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+import java.time.LocalDate;
+
 /**
  * Model class for a Transaction.
  *
@@ -21,7 +23,16 @@ public class Transaction {
 	 * Default constructor.
 	 */
 	public Transaction() {
-		this(null, null, null, false);
+		this(null, null);
+	}
+
+	/**
+	 * Constructor with some initial data with default value of scheduled.
+	 *  @param description
+	 * @param sum
+	 */
+	public Transaction(String description, String sum) {
+		this(String.valueOf(LocalDate.now().getDayOfMonth()), description, sum);
 	}
 
 	/**
