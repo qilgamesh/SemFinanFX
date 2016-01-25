@@ -2,6 +2,7 @@ package ru.qilnet.semfinanfx;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import ru.qilnet.semfinanfx.model.Transaction;
@@ -19,7 +20,7 @@ public class TransactionEditDialogController {
 	@FXML
 	private TextField sumField;
 	@FXML
-	private TextField dayField;
+	private DatePicker dayPicker;
 
 	private Stage dialogStage;
 	private Transaction transaction;
@@ -52,7 +53,8 @@ public class TransactionEditDialogController {
 
 		descriptionField.setText(transaction.getDescription());
 		sumField.setText(transaction.getSum());
-		dayField.setPromptText("dd.mm.yyyy");
+		//dayPicker.setDayCellFactory();
+		dayPicker.setValue(DateUtil.parseDay(transaction.getDayOfMonth()));
 	}
 
 	/**
@@ -72,7 +74,7 @@ public class TransactionEditDialogController {
 		if (isInputValid()) {
 			transaction.setDescription(descriptionField.getText());
 			transaction.setSum(sumField.getText());
-			transaction.setDayOfMonth(dayField.getText());
+			transaction.setDayOfMonth(dayPicker.getValue().getDayOfMonth());
 
 			okClicked = true;
 			dialogStage.close();
@@ -106,14 +108,6 @@ public class TransactionEditDialogController {
 				Double.parseDouble(sumField.getText());
 			} catch (NumberFormatException e) {
 				errorMessage += "Неверная сумма (должно быть число)!\n";
-			}
-		}
-
-		if (dayField.getText() == null || dayField.getText().length() == 0) {
-			errorMessage += "Неверная дата!\n";
-		} else {
-			if (!DateUtil.validDate(dayField.getText())) {
-				errorMessage += "Неверная дата. Используйте формат дд.мм.гггг!\n";
 			}
 		}
 

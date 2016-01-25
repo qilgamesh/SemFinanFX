@@ -2,7 +2,6 @@ package ru.qilnet.semfinanfx;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import ru.qilnet.semfinanfx.model.Transaction;
 import ru.qilnet.semfinanfx.util.DateUtil;
 
@@ -17,11 +16,17 @@ public class TransactionOverviewController {
 	@FXML
 	private TableView<Transaction> transactionTable;
 	@FXML
+	private TableView<Transaction> scheduledTable;
+	@FXML
 	private TableColumn<Transaction, String> dayColumn;
+	@FXML
+	private TableColumn<Transaction, String> scheduledDayColumn;
 	@FXML
 	private TableColumn<Transaction, String> creditDescriptionColumn;
 	@FXML
 	private TableColumn<Transaction, String> creditSumColumn;
+	@FXML
+	private TableColumn<Transaction, String> scheduledCreditSumColumn;
 	@FXML
 	private TableColumn<Transaction, String> debitDescriptionColumn;
 	@FXML
@@ -50,7 +55,8 @@ public class TransactionOverviewController {
 	@FXML
 	private void initialize() {
 		// Initialize the transaction table with the two columns.
-		dayColumn.setCellValueFactory(new PropertyValueFactory<>("dayOfMonth"));
+		dayColumn.setCellValueFactory(cellData -> cellData.getValue().dayOfMonthProperty());
+		dayColumn.setStyle("-fx-alignment: CENTER;");
 		creditDescriptionColumn.setCellValueFactory(cellData -> cellData.getValue().descriptionProperty());
 		creditSumColumn.setCellValueFactory(cellData -> cellData.getValue().sumProperty());
 
@@ -60,12 +66,22 @@ public class TransactionOverviewController {
 		// Clear transaction details.
 		showTransactionDetails(null);
 
+		scheduledDayColumn.setText(DateUtil.dayFormat(LocalDate.now()));
+		scheduledCreditSumColumn.setText("Сегодня");
 		// Listen for selection changes and show the transaction details when changed.
 		transactionTable.getSelectionModel().selectedItemProperty().addListener(
 				(observable, oldValue, newValue) -> showTransactionDetails(newValue));
 
 		monthChoice.setItems(DateUtil.getListOfMonths());
 		monthChoice.setValue(DateUtil.getMonthName(LocalDate.now()));
+
+		monthChoice.getSelectionModel().selectedIndexProperty().addListener((ov, value, new_value) -> {
+			/**
+			 * TODO method which do change current month
+			 * do so so
+			 */
+		});
+
 	}
 
 	/**

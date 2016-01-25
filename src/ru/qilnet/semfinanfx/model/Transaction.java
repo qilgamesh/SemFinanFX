@@ -13,7 +13,7 @@ import java.time.LocalDate;
  * @author Andrey Semenyuk
  */
 public class Transaction {
-//	private final StringProperty date;
+	//	private final StringProperty date;
 	private final StringProperty description;
 	private final StringProperty sum;
 	private final StringProperty dayOfMonth;
@@ -28,7 +28,8 @@ public class Transaction {
 
 	/**
 	 * Constructor with some initial data with default value of scheduled.
-	 *  @param description
+	 *
+	 * @param description
 	 * @param sum
 	 */
 	public Transaction(String description, String sum) {

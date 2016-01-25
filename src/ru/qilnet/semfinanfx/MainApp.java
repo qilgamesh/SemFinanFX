@@ -23,103 +23,108 @@ import java.util.prefs.Preferences;
 
 public class MainApp extends Application {
 
-    private Stage primaryStage;
-    private BorderPane rootLayout;
+	private Stage primaryStage;
+	private BorderPane rootLayout;
 
-    /**
-     * The data as an observable list of Transactions.
-     */
-    private ObservableList<Transaction> transactionData = FXCollections.observableArrayList();
+	/**
+	 * The data as an observable list of Transactions.
+	 */
+	private ObservableList<Transaction> transactionData = FXCollections.observableArrayList();
 
-    /**
-     * Constructor
-     */
-    public MainApp() {
-        // Add some sample data
+	/**
+	 * Constructor
+	 */
+	public MainApp() {
+		// Add some sample data
 		transactionData.add(new Transaction("01", "Начальный остаток", "1000"));
-		/**
-        transactionData.add(new Transaction("05", "Зарплата", "20000"));
-        transactionData.add(new Transaction("06", "Шабашка", "1000"));
-        transactionData.add(new Transaction("07", "Подарок", "1000"));
-        transactionData.add(new Transaction("15", "Премия", "5000"));
-		 */
-    }
 
-    /**
-     * Returns the data as an observable list of Transactions.
-     * @return list of transaction
-     */
-    public ObservableList<Transaction> getTransactionData() {
-        return transactionData;
-    }
+	}
 
-    @Override
-    public void start(Stage primaryStage) throws Exception{
-        this.primaryStage = primaryStage;
-        this.primaryStage.setTitle("SemFinanFX");
-        initRootLayout();
-        showTransactionTableOverview();
-    }
+	/**
+	 * Returns the data as an observable list of Transactions.
+	 *
+	 * @return list of transaction
+	 */
+	public ObservableList<Transaction> getTransactionData() {
+		return transactionData;
+	}
 
-    /**
-     * Initializes the root layout.
-     */
-    public void initRootLayout() {
-        try {
-            // Load root layout from fxml file.
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(MainApp.class.getResource("view/RootLayout.fxml"));
-            rootLayout = loader.load();
+	/**
+	 * TODO method to set TransactionData for current month
+	 * <p>
+	 * public setTransactionData(ObservableList<Transaction> transactionData) {
+	 * this.transactionData = transactionData;
+	 * }
+	 */
 
-            // Show the scene containing the root layout.
-            Scene scene = new Scene(rootLayout);
-            primaryStage.setScene(scene);
+	@Override
+	public void start(Stage primaryStage) throws Exception {
+		this.primaryStage = primaryStage;
+		this.primaryStage.setTitle("SemFinanFX");
+		initRootLayout();
+		showTransactionTableOverview();
+	}
+
+	/**
+	 * Initializes the root layout.
+	 */
+	public void initRootLayout() {
+		try {
+			// Load root layout from fxml file.
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(MainApp.class.getResource("view/RootLayout.fxml"));
+			rootLayout = loader.load();
+
+			// Show the scene containing the root layout.
+			Scene scene = new Scene(rootLayout);
+			primaryStage.setScene(scene);
 
 			// Give the controller access to the main app.
 			RootLayoutController controller = loader.getController();
 			controller.setMainApp(this);
 
-            primaryStage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+			primaryStage.show();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 		// Try to load last opened person file.
 		File file = getTransactionFilePath();
 		if (file != null) {
 			loadSemFinanDB(file);
 		}
-    }
+	}
 
-    /**
-     * Shows the transaction overview inside the root layout.
-     */
-    public void showTransactionTableOverview() {
-        try {
-            // Load transaction overview.
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(MainApp.class.getResource("view/TransactionsOverview.fxml"));
-            Pane transactionsOverview = loader.load();
+	/**
+	 * Shows the transaction overview inside the root layout.
+	 */
+	public void showTransactionTableOverview() {
+		try {
+			// Load transaction overview.
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(MainApp.class.getResource("view/TransactionsOverview.fxml"));
+			Pane transactionsOverview = loader.load();
 
-            // Set transaction overview into the center of root layout.
-            rootLayout.setCenter(transactionsOverview);
+			// Set transaction overview into the center of root layout.
+			rootLayout.setCenter(transactionsOverview);
 
-            // Give the controller access to the main app.
-            TransactionOverviewController controller = loader.getController();
-            controller.setMainApp(this);
+			// Give the controller access to the main app.
+			TransactionOverviewController controller = loader.getController();
+			controller.setMainApp(this);
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
-    /**
-     * Returns the main stage.
-     * @return primaryStage
-     */
-    public Stage getPrimaryStage() {
-        return primaryStage;
-    }
+	/**
+	 * Returns the main stage.
+	 *
+	 * @return primaryStage
+	 */
+	public Stage getPrimaryStage() {
+		return primaryStage;
+	}
 
 	/**
 	 * Opens a dialog to edit details for the specified transaction. If the user
@@ -188,12 +193,12 @@ public class MainApp extends Application {
 			prefs.put("filePath", file.getPath());
 
 			// Update the stage title.
-			primaryStage.setTitle("AddressApp - " + file.getName());
+			primaryStage.setTitle("SemFinanFX - " + file.getName());
 		} else {
 			prefs.remove("filePath");
 
 			// Update the stage title.
-			primaryStage.setTitle("AddressApp");
+			primaryStage.setTitle("SemFinanFX");
 		}
 	}
 
@@ -258,7 +263,7 @@ public class MainApp extends Application {
 		}
 	}
 
-    public static void main(String[] args) {
-        launch(args);
-    }
+	public static void main(String[] args) {
+		launch(args);
+	}
 }
