@@ -16,7 +16,7 @@ public class Transaction implements Serializable {
 	private final ObjectProperty<LocalDate> date;
 	private final StringProperty description;
 	private final StringProperty sum;
-	private final BooleanProperty scheduled;
+	private final BooleanProperty isScheduled;
 	private final StringProperty dayOfMonth;
 
 	/**
@@ -27,7 +27,7 @@ public class Transaction implements Serializable {
 	}
 
 	/**
-	 * Constructor with some initial data with default value of scheduled and date now().
+	 * Constructor with some initial data with default value of isScheduled and date now().
 	 *
 	 * @param description
 	 * @param sum
@@ -37,7 +37,7 @@ public class Transaction implements Serializable {
 	}
 
 	/**
-	 * Constructor with some initial data with default value of scheduled.
+	 * Constructor with some initial data with default value of isScheduled.
 	 *
 	 * @param date
 	 * @param description
@@ -53,12 +53,12 @@ public class Transaction implements Serializable {
 	 * @param date
 	 * @param description
 	 * @param sum
-	 * @param scheduled
+	 * @param isScheduled
 	 */
-	public Transaction(LocalDate date, String description, String sum, boolean scheduled) {
+	public Transaction(LocalDate date, String description, String sum, boolean isScheduled) {
 		this.description = new SimpleStringProperty(description);
 		this.sum = new SimpleStringProperty(sum);
-		this.scheduled = new SimpleBooleanProperty(scheduled);
+		this.isScheduled = new SimpleBooleanProperty(isScheduled);
 		this.date = new SimpleObjectProperty<>(date);
 		dayOfMonth = new SimpleStringProperty(String.valueOf(date.getDayOfMonth()));
 	}
@@ -109,7 +109,7 @@ public class Transaction implements Serializable {
 		return dayOfMonth;
 	}
 
-	public boolean isScheduled() {
-		return scheduled.get();
+	public boolean getIsScheduled() {
+		return isScheduled.get();
 	}
 }
