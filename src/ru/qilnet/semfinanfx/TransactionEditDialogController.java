@@ -6,7 +6,6 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import ru.qilnet.semfinanfx.model.Transaction;
-import ru.qilnet.semfinanfx.util.DateUtil;
 
 /**
  * Dialog to edit details of a transaction
@@ -50,11 +49,9 @@ public class TransactionEditDialogController {
 	 */
 	public void setTransaction(Transaction transaction) {
 		this.transaction = transaction;
-
 		descriptionField.setText(transaction.getDescription());
 		sumField.setText(transaction.getSum());
-		//dayPicker.setDayCellFactory();
-		dayPicker.setValue(DateUtil.parseDay(transaction.getDayOfMonth()));
+		dayPicker.setValue(transaction.getDate());
 	}
 
 	/**
@@ -74,8 +71,7 @@ public class TransactionEditDialogController {
 		if (isInputValid()) {
 			transaction.setDescription(descriptionField.getText());
 			transaction.setSum(sumField.getText());
-			transaction.setDayOfMonth(dayPicker.getValue().getDayOfMonth());
-
+			transaction.setDate(dayPicker.getValue());
 			okClicked = true;
 			dialogStage.close();
 		}

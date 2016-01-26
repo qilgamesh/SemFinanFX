@@ -14,6 +14,8 @@ public class TransactionOverviewController {
 	@FXML
 	private ChoiceBox<String> monthChoice;
 	@FXML
+	private ChoiceBox<String> yearChoice;
+	@FXML
 	private TableView<Transaction> transactionTable;
 	@FXML
 	private TableView<Transaction> scheduledTable;
@@ -36,7 +38,7 @@ public class TransactionOverviewController {
 	@FXML
 	private Label sumLabel;
 	@FXML
-	private Label dayLabel;
+	private Label uidLabel;
 
 	// Reference to the main application.
 	private MainApp mainApp;
@@ -82,6 +84,8 @@ public class TransactionOverviewController {
 			 */
 		});
 
+		yearChoice.getItems().add(String.valueOf(LocalDate.now().getYear()));
+		//yearChoice.setValue();
 	}
 
 	/**
@@ -93,29 +97,52 @@ public class TransactionOverviewController {
 		this.mainApp = mainApp;
 
 		// Add observable list data to the table
-		transactionTable.setItems(mainApp.getTransactionData());
+		transactionTable.setItems(mainApp.getCurrentTransactionData());
 	}
 
 	/**
 	 * Fills all text fields to show details about the transaction.
 	 * If the specified transaction is null, all text fields are cleared.
 	 *
+	 * TODO доработать вывод подробновстей
 	 * @param transaction the transaction or null
 	 */
 	private void showTransactionDetails(Transaction transaction) {
 		if (transaction != null) {
 			// Fill the labels with info from the transaction object.
-			dayLabel.setText(transaction.getDayOfMonth());
+			uidLabel.setText(String.valueOf(mainApp.getCurrentTransactionData().indexOf(transaction)));
 			descriptionLabel.setText(transaction.getDescription());
 			sumLabel.setText(transaction.getSum() + "руб.");
 		} else {
 			// transaction is null, remove all the text.
 			descriptionLabel.setText("");
 			sumLabel.setText("");
-			dayLabel.setText("");
+			uidLabel.setText("");
 		}
 	}
 
+	/**
+	 * Called when the user clicks the edit button. Opens a dialog to edit
+	 * details for the selected transaction.
+	 */
+	@FXML
+	private void handleEditTransaction() {
+		Transaction selectedTransaction = transactionTable.getSelectionModel().getSelectedItem();
+		if (selectedTransaction != null) {
+			boolean okClicked = mainApp.showTransactionEditDialog(selectedTransaction);
+			if (okClicked) {
+				showTransactionDetails(selectedTransaction);
+			}
+		} else {
+			// Nothing selected.
+			Alert alert = new Alert(Alert.AlertType.WARNING);
+			alert.initOwner(mainApp.getPrimaryStage());
+			alert.setTitle("Ничего не выбрано");
+			alert.setHeaderText("Не выбрана транзакция");
+			alert.setContentText("Пожалуйста, выберите транзакцию");
+			alert.showAndWait();
+		}
+	}
 
 	/**
 	 * Called when the user clicks on the delete button.
@@ -145,32 +172,9 @@ public class TransactionOverviewController {
 		Transaction tempTransaction = new Transaction();
 		boolean okClicked = mainApp.showTransactionEditDialog(tempTransaction);
 		if (okClicked) {
-			mainApp.getTransactionData().add(tempTransaction);
+			mainApp.getCurrentTransactionData().add(tempTransaction);
 		}
 	}
 
-	/**
-	 * Called when the user clicks the edit button. Opens a dialog to edit
-	 * details for the selected transaction.
-	 */
-	@FXML
-	private void handleEditTransaction() {
-		Transaction selectedTransaction = transactionTable.getSelectionModel().getSelectedItem();
-		if (selectedTransaction != null) {
-			boolean okClicked = mainApp.showTransactionEditDialog(selectedTransaction);
-			if (okClicked) {
-				showTransactionDetails(selectedTransaction);
-			}
 
-		} else {
-			// Nothing selected.
-			Alert alert = new Alert(Alert.AlertType.WARNING);
-			alert.initOwner(mainApp.getPrimaryStage());
-			alert.setTitle("Ничего не выбрано");
-			alert.setHeaderText("Не выбрана транзакция");
-			alert.setContentText("Пожалуйста, выберите транзакцию");
-
-			alert.showAndWait();
-		}
-	}
 }

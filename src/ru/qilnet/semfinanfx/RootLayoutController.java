@@ -32,7 +32,7 @@ public class RootLayoutController {
 	 */
 	@FXML
 	private void handleNew() {
-		mainApp.getTransactionData().clear();
+		mainApp.getCurrentTransactionData().clear();
 		mainApp.setTransactionFilePath(null);
 	}
 

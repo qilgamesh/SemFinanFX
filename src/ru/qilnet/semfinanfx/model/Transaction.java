@@ -1,10 +1,10 @@
 package ru.qilnet.semfinanfx.model;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
+import ru.qilnet.semfinanfx.util.LocalDateAdapter;
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.io.Serializable;
 import java.time.LocalDate;
 
 /**
@@ -12,54 +12,55 @@ import java.time.LocalDate;
  *
  * @author Andrey Semenyuk
  */
-public class Transaction {
-	//	private final StringProperty date;
+public class Transaction implements Serializable {
+	private final ObjectProperty<LocalDate> date;
 	private final StringProperty description;
 	private final StringProperty sum;
-	private final StringProperty dayOfMonth;
 	private final BooleanProperty scheduled;
+	private final StringProperty dayOfMonth;
 
 	/**
 	 * Default constructor.
 	 */
 	public Transaction() {
-		this(null, null);
+		this(LocalDate.now().withDayOfMonth(1), "Начальный остаток", "1");
 	}
 
 	/**
-	 * Constructor with some initial data with default value of scheduled.
+	 * Constructor with some initial data with default value of scheduled and date now().
 	 *
 	 * @param description
 	 * @param sum
 	 */
 	public Transaction(String description, String sum) {
-		this(String.valueOf(LocalDate.now().getDayOfMonth()), description, sum);
+		this(LocalDate.now(), description, sum);
 	}
 
 	/**
 	 * Constructor with some initial data with default value of scheduled.
 	 *
-	 * @param dayOfMonth
+	 * @param date
 	 * @param description
 	 * @param sum
 	 */
-	public Transaction(String dayOfMonth, String description, String sum) {
-		this(dayOfMonth, description, sum, false);
+	public Transaction(LocalDate date, String description, String sum) {
+		this(date, description, sum, false);
 	}
 
 	/**
 	 * Constructor with some initial data.
 	 *
-	 * @param dayOfMonth
+	 * @param date
 	 * @param description
 	 * @param sum
 	 * @param scheduled
 	 */
-	public Transaction(String dayOfMonth, String description, String sum, boolean scheduled) {
-		this.dayOfMonth = new SimpleStringProperty(dayOfMonth);
+	public Transaction(LocalDate date, String description, String sum, boolean scheduled) {
 		this.description = new SimpleStringProperty(description);
 		this.sum = new SimpleStringProperty(sum);
 		this.scheduled = new SimpleBooleanProperty(scheduled);
+		this.date = new SimpleObjectProperty<>(date);
+		dayOfMonth = new SimpleStringProperty(String.valueOf(date.getDayOfMonth()));
 	}
 
 	public String getDescription() {
@@ -86,16 +87,22 @@ public class Transaction {
 		return sum;
 	}
 
+	@XmlJavaTypeAdapter(LocalDateAdapter.class)
+	public LocalDate getDate() {
+		return date.get();
+	}
+
+	public void setDate(LocalDate date) {
+		this.date.set(date);
+		this.dayOfMonth.set(String.valueOf(date.getDayOfMonth()));
+	}
+
+	public ObjectProperty<LocalDate> dateProperty() {
+		return date;
+	}
+
 	public String getDayOfMonth() {
 		return dayOfMonth.get();
-	}
-
-	public void setDayOfMonth(String day) {
-		dayOfMonth.set(day);
-	}
-
-	public void setDayOfMonth(int day) {
-		dayOfMonth.set(String.valueOf(day));
 	}
 
 	public StringProperty dayOfMonthProperty() {

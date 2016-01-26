@@ -11,6 +11,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import ru.qilnet.semfinanfx.model.SemFinanDB;
 import ru.qilnet.semfinanfx.model.Transaction;
 import ru.qilnet.semfinanfx.model.TransactionListWrapper;
 
@@ -25,19 +26,17 @@ public class MainApp extends Application {
 
 	private Stage primaryStage;
 	private BorderPane rootLayout;
-
+	private SemFinanDB sfdb;
 	/**
 	 * The data as an observable list of Transactions.
 	 */
-	private ObservableList<Transaction> transactionData = FXCollections.observableArrayList();
+	private ObservableList<Transaction> currentTransactionData = FXCollections.observableArrayList();
 
 	/**
 	 * Constructor
 	 */
 	public MainApp() {
-		// Add some sample data
-		transactionData.add(new Transaction("01", "Начальный остаток", "1000"));
-
+		System.out.println("method MainApp");
 	}
 
 	/**
@@ -45,20 +44,21 @@ public class MainApp extends Application {
 	 *
 	 * @return list of transaction
 	 */
-	public ObservableList<Transaction> getTransactionData() {
-		return transactionData;
+	public ObservableList<Transaction> getCurrentTransactionData() {
+		return currentTransactionData;
 	}
 
 	/**
-	 * TODO method to set TransactionData for current month
+	 * TODO method to set MonthTransactionData for current month
 	 * <p>
-	 * public setTransactionData(ObservableList<Transaction> transactionData) {
-	 * this.transactionData = transactionData;
+	 * public setTransactionData(ObservableList<Transaction> currentTransactionData) {
+	 * this.currentTransactionData = currentTransactionData;
 	 * }
 	 */
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
+		System.out.println("method start");
 		this.primaryStage = primaryStage;
 		this.primaryStage.setTitle("SemFinanFX");
 		initRootLayout();
@@ -70,6 +70,7 @@ public class MainApp extends Application {
 	 */
 	public void initRootLayout() {
 		try {
+			System.out.println("method initRootLayout");
 			// Load root layout from fxml file.
 			FXMLLoader loader = new FXMLLoader();
 			loader.setLocation(MainApp.class.getResource("view/RootLayout.fxml"));
@@ -191,14 +192,8 @@ public class MainApp extends Application {
 		Preferences prefs = Preferences.userNodeForPackage(MainApp.class);
 		if (file != null) {
 			prefs.put("filePath", file.getPath());
-
-			// Update the stage title.
-			primaryStage.setTitle("SemFinanFX - " + file.getName());
 		} else {
 			prefs.remove("filePath");
-
-			// Update the stage title.
-			primaryStage.setTitle("SemFinanFX");
 		}
 	}
 
@@ -214,21 +209,23 @@ public class MainApp extends Application {
 					.newInstance(TransactionListWrapper.class);
 			Unmarshaller um = context.createUnmarshaller();
 
-			// Reading XML from the file and unmarshalling.
 			TransactionListWrapper wrapper = (TransactionListWrapper) um.unmarshal(file);
 
-			transactionData.clear();
-			transactionData.addAll(wrapper.getTransactions());
+			currentTransactionData.clear();
+			currentTransactionData.addAll(wrapper.getTransactions());
 
 			// Save the file path to the registry.
 			setTransactionFilePath(file);
+
 
 		} catch (Exception e) { // catches ANY exception
 			Alert alert = new Alert(Alert.AlertType.ERROR);
 			alert.setTitle("Ошибка");
 			alert.setHeaderText("Не удалось загрузить данные из файла:\n" + file.getPath());
-			alert.setContentText(e.toString());
+			alert.setContentText("Будет создана новая база данных");
 			alert.showAndWait();
+			sfdb = new SemFinanDB();
+			currentTransactionData = sfdb.getYearTransactions().getMonthTransactions();
 		}
 
 	}
@@ -241,13 +238,17 @@ public class MainApp extends Application {
 	public void saveSemFinanDB(File file) {
 		try {
 			JAXBContext context = JAXBContext
-					.newInstance(TransactionListWrapper.class);
+					.newInstance(SemFinanDB.class);
 			Marshaller m = context.createMarshaller();
 			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
 			// Wrapping our transaction data.
-			TransactionListWrapper wrapper = new TransactionListWrapper();
-			wrapper.setTransactions(transactionData);
+			SemFinanDB wrapper = new SemFinanDB();
+
+			/** TODO
+			 * wrapper
+			 */
+			wrapper.setTransactions();
 
 			// Marshalling and saving XML to the file.
 			m.marshal(wrapper, file);
