@@ -11,26 +11,22 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import ru.qilnet.semfinanfx.model.SemFinanDB;
 import ru.qilnet.semfinanfx.model.Transaction;
-import ru.qilnet.semfinanfx.model.TransactionListWrapper;
+import ru.qilnet.semfinanfx.model.TransactionList;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.time.LocalDate;
 import java.util.prefs.Preferences;
 
 public class MainApp extends Application {
 
 	private Stage primaryStage;
 	private BorderPane rootLayout;
-	private SemFinanDB sfdb;
+
 	/**
-	 * The data as an observable list of Transactions.
+	 * The data of all Transactions.
 	 */
-	private ObservableList<Transaction> currentTransactionData = FXCollections.observableArrayList();
+	private TransactionList transactionData;
 
 	/**
 	 * Constructor
@@ -43,11 +39,21 @@ public class MainApp extends Application {
 	 * Returns the data as an observable list of Transactions.
 	 *
 	 * @return list of transaction
+	public ObservableList<Transaction> getCurrentTransactionData(LocalDate date) {
+		return (ObservableList<Transaction>) transactionData.getTransactions(date);
+	}
 	 */
-	public ObservableList<Transaction> getCurrentTransactionData() {
-		return currentTransactionData;
+
+	public ObservableList<Transaction> getCurrentTransactionData(LocalDate date) {
+		return FXCollections.observableArrayList(transactionData.getTransactions(date));
 	}
 
+	public TransactionList getTransactionData() {
+		return transactionData;
+	}
+	public void setTransactionData(TransactionList transactionData) {
+		this.transactionData = transactionData;
+	}
 	/**
 	 * TODO method to set MonthTransactionData for current month
 	 * <p>
@@ -92,7 +98,7 @@ public class MainApp extends Application {
 		// Try to load last opened person file.
 		File file = getTransactionFilePath();
 		if (file != null) {
-			loadSemFinanDB(file);
+			loadTransactionData(file);
 		}
 	}
 
@@ -198,69 +204,57 @@ public class MainApp extends Application {
 	}
 
 	/**
-	 * Loads SemFinanFX data from the specified file. The current SemFinanFX data will
+	 * Loads all transactions data from the specified file. The current TransactionData data will
 	 * be replaced.
 	 *
 	 * @param file
 	 */
-	public void loadSemFinanDB(File file) {
+	public void loadTransactionData(File file) {
+		FileInputStream fIn = null;
+		ObjectInputStream oIn = null;
 		try {
-			JAXBContext context = JAXBContext
-					.newInstance(TransactionListWrapper.class);
-			Unmarshaller um = context.createUnmarshaller();
-
-			TransactionListWrapper wrapper = (TransactionListWrapper) um.unmarshal(file);
-
-			currentTransactionData.clear();
-			currentTransactionData.addAll(wrapper.getTransactions());
-
-			// Save the file path to the registry.
-			setTransactionFilePath(file);
-
-
-		} catch (Exception e) { // catches ANY exception
+			fIn = new FileInputStream(file);
+			oIn = new ObjectInputStream(fIn);
+			transactionData = (TransactionList) oIn.readObject();
+		} catch (FileNotFoundException e) {
 			Alert alert = new Alert(Alert.AlertType.ERROR);
 			alert.setTitle("Ошибка");
 			alert.setHeaderText("Не удалось загрузить данные из файла:\n" + file.getPath());
 			alert.setContentText("Будет создана новая база данных");
 			alert.showAndWait();
-			sfdb = new SemFinanDB();
-			currentTransactionData = sfdb.getYearTransactions().getMonthTransactions();
-		}
+			transactionData = new TransactionList();
 
+		} catch (IOException | ClassNotFoundException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
-	 * Saves the current SemFinanFX data to the specified file.
+	 * Saves all transactions data to the specified file.
 	 *
 	 * @param file
 	 */
-	public void saveSemFinanDB(File file) {
+	public void saveTransactionData(File file) {
+		FileOutputStream fOut = null;
+		ObjectOutputStream oOut = null;
 		try {
-			JAXBContext context = JAXBContext
-					.newInstance(SemFinanDB.class);
-			Marshaller m = context.createMarshaller();
-			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-
-			// Wrapping our transaction data.
-			SemFinanDB wrapper = new SemFinanDB();
-
-			/** TODO
-			 * wrapper
-			 */
-			wrapper.setTransactions();
-
-			// Marshalling and saving XML to the file.
-			m.marshal(wrapper, file);
-
-			// Save the file path to the registry.
+			fOut = new FileOutputStream(file);
+			oOut = new ObjectOutputStream(fOut);
+			oOut.writeObject(transactionData);
 			setTransactionFilePath(file);
-		} catch (Exception e) { // catches ANY exception
-			Alert alert = new Alert(Alert.AlertType.ERROR);
-			alert.setTitle("Ошибка");
-			alert.setHeaderText("Не удалось сохранить данные в файл:\n" + file.getPath());
-			alert.setContentText(e.toString());
-			alert.showAndWait();
+		} catch (IOException e) {
+			try {
+				assert oOut != null;
+				oOut.flush();
+				oOut.close();
+				fOut.close();
+			} catch (IOException ioe) {
+				Alert alert = new Alert(Alert.AlertType.ERROR);
+				alert.setTitle("Ошибка");
+				alert.setHeaderText("Не удалось сохранить данные в файл:\n" + file.getPath());
+				alert.setContentText(ioe.toString());
+				alert.showAndWait();
+			}
 		}
 	}
 

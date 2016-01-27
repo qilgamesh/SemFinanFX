@@ -1,9 +1,7 @@
 package ru.qilnet.semfinanfx.model;
 
 import javafx.beans.property.*;
-import ru.qilnet.semfinanfx.util.LocalDateAdapter;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.time.LocalDate;
 
@@ -13,17 +11,21 @@ import java.time.LocalDate;
  * @author Andrey Semenyuk
  */
 public class Transaction implements Serializable {
-	private final ObjectProperty<LocalDate> date;
-	private final StringProperty description;
-	private final StringProperty sum;
-	private final BooleanProperty isScheduled;
-	private final StringProperty dayOfMonth;
+	private transient final ObjectProperty<LocalDate> date;
+	private transient final StringProperty description;
+	private transient final StringProperty sum;
+	private transient final StringProperty dayOfMonth;
+
+	private LocalDate dateValue;
+	private String descriptionValue;
+	private String sumValue;
+	private boolean isScheduled = false;
 
 	/**
 	 * Default constructor.
 	 */
 	public Transaction() {
-		this(LocalDate.now().withDayOfMonth(1), "Начальный остаток", "1");
+		this(LocalDate.now().withDayOfMonth(1), "NNNNNNNNNNNNNNNNNNNNNNNNN", "1");
 	}
 
 	/**
@@ -57,18 +59,22 @@ public class Transaction implements Serializable {
 	 */
 	public Transaction(LocalDate date, String description, String sum, boolean isScheduled) {
 		this.description = new SimpleStringProperty(description);
+		this.descriptionValue = description;
 		this.sum = new SimpleStringProperty(sum);
-		this.isScheduled = new SimpleBooleanProperty(isScheduled);
+		this.sumValue = sum;
+		this.isScheduled = isScheduled;
 		this.date = new SimpleObjectProperty<>(date);
-		dayOfMonth = new SimpleStringProperty(String.valueOf(date.getDayOfMonth()));
+		this.dateValue = date;
+		this.dayOfMonth = new SimpleStringProperty(String.valueOf(date.getDayOfMonth()));
 	}
 
 	public String getDescription() {
-		return description.get();
+		return descriptionValue;
 	}
 
-	public void setDescription(String firstName) {
-		this.description.set(firstName);
+	public void setDescription(String description) {
+		this.description.set(description);
+		this.descriptionValue = description;
 	}
 
 	public StringProperty descriptionProperty() {
@@ -76,24 +82,25 @@ public class Transaction implements Serializable {
 	}
 
 	public String getSum() {
-		return sum.get();
+		return sumValue;
 	}
 
-	public void setSum(String lastName) {
-		this.sum.set(lastName);
+	public void setSum(String sum) {
+		this.sum.set(sum);
+		this.sumValue = sum;
 	}
 
 	public StringProperty sumProperty() {
 		return sum;
 	}
 
-	@XmlJavaTypeAdapter(LocalDateAdapter.class)
 	public LocalDate getDate() {
-		return date.get();
+		return dateValue;
 	}
 
 	public void setDate(LocalDate date) {
 		this.date.set(date);
+		this.dateValue = date;
 		this.dayOfMonth.set(String.valueOf(date.getDayOfMonth()));
 	}
 
@@ -101,15 +108,18 @@ public class Transaction implements Serializable {
 		return date;
 	}
 
-	public String getDayOfMonth() {
-		return dayOfMonth.get();
-	}
-
 	public StringProperty dayOfMonthProperty() {
 		return dayOfMonth;
 	}
-
 	public boolean getIsScheduled() {
-		return isScheduled.get();
+		return isScheduled;
+	}
+
+	public void setScheduled() {
+		isScheduled = true;
+	}
+
+	public void setNotScheduled() {
+		isScheduled = false;
 	}
 }

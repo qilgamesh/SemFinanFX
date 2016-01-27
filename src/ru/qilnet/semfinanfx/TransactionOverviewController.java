@@ -40,6 +40,7 @@ public class TransactionOverviewController {
 	@FXML
 	private Label uidLabel;
 
+	private LocalDate date;
 	// Reference to the main application.
 	private MainApp mainApp;
 
@@ -74,14 +75,14 @@ public class TransactionOverviewController {
 		transactionTable.getSelectionModel().selectedItemProperty().addListener(
 				(observable, oldValue, newValue) -> showTransactionDetails(newValue));
 
+		date = LocalDate.now();
 		monthChoice.setItems(DateUtil.getListOfMonths());
-		monthChoice.setValue(DateUtil.getMonthName(LocalDate.now()));
+		monthChoice.setValue(DateUtil.getMonthName(date));
+
 
 		monthChoice.getSelectionModel().selectedIndexProperty().addListener((ov, value, new_value) -> {
-			/**
-			 * TODO method which do change current month
-			 * do so so
-			 */
+			date = date.withMonth(new_value.intValue() + 1);
+			transactionTable.setItems(mainApp.getCurrentTransactionData(date));
 		});
 
 		yearChoice.getItems().add(String.valueOf(LocalDate.now().getYear()));
@@ -97,7 +98,8 @@ public class TransactionOverviewController {
 		this.mainApp = mainApp;
 
 		// Add observable list data to the table
-		transactionTable.setItems(mainApp.getCurrentTransactionData());
+
+		transactionTable.setItems(mainApp.getCurrentTransactionData(date));
 	}
 
 	/**
@@ -110,7 +112,7 @@ public class TransactionOverviewController {
 	private void showTransactionDetails(Transaction transaction) {
 		if (transaction != null) {
 			// Fill the labels with info from the transaction object.
-			uidLabel.setText(String.valueOf(mainApp.getCurrentTransactionData().indexOf(transaction)));
+			uidLabel.setText(String.valueOf(mainApp.getCurrentTransactionData(date).indexOf(transaction)));
 			descriptionLabel.setText(transaction.getDescription());
 			sumLabel.setText(transaction.getSum() + "руб.");
 		} else {
@@ -172,7 +174,7 @@ public class TransactionOverviewController {
 		Transaction tempTransaction = new Transaction();
 		boolean okClicked = mainApp.showTransactionEditDialog(tempTransaction);
 		if (okClicked) {
-			mainApp.getCurrentTransactionData().add(tempTransaction);
+			mainApp.getTransactionData().getTransactions().add(tempTransaction);
 		}
 	}
 

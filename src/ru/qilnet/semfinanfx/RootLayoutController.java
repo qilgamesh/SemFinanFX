@@ -3,6 +3,7 @@ package ru.qilnet.semfinanfx;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.stage.FileChooser;
+import ru.qilnet.semfinanfx.model.TransactionList;
 
 import java.io.File;
 
@@ -32,7 +33,7 @@ public class RootLayoutController {
 	 */
 	@FXML
 	private void handleNew() {
-		mainApp.getCurrentTransactionData().clear();
+		mainApp.setTransactionData(new TransactionList());
 		mainApp.setTransactionFilePath(null);
 	}
 
@@ -52,7 +53,7 @@ public class RootLayoutController {
 		File file = fileChooser.showOpenDialog(mainApp.getPrimaryStage());
 
 		if (file != null) {
-			mainApp.loadSemFinanDB(file);
+			mainApp.loadTransactionData(file);
 		}
 	}
 
@@ -65,7 +66,7 @@ public class RootLayoutController {
 		File sfdbFile = mainApp.getTransactionFilePath();
 
 		if (sfdbFile != null) {
-			mainApp.saveSemFinanDB(sfdbFile);
+			mainApp.saveTransactionData(sfdbFile);
 		} else {
 			handleSaveAs();
 		}
@@ -91,7 +92,7 @@ public class RootLayoutController {
 			if (!file.getPath().endsWith(".sfdb")) {
 				file = new File(file.getPath() + ".sfdb");
 			}
-			mainApp.saveSemFinanDB(file);
+			mainApp.saveTransactionData(file);
 		}
 	}
 
