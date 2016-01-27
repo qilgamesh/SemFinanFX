@@ -82,7 +82,7 @@ public class TransactionOverviewController {
 
 		monthChoice.getSelectionModel().selectedIndexProperty().addListener((ov, value, new_value) -> {
 			date = date.withMonth(new_value.intValue() + 1);
-			transactionTable.setItems(mainApp.getCurrentTransactionData(date));
+			transactionTable.setItems(mainApp.getTransactions(date));
 		});
 
 		yearChoice.getItems().add(String.valueOf(LocalDate.now().getYear()));
@@ -99,7 +99,7 @@ public class TransactionOverviewController {
 
 		// Add observable list data to the table
 
-		transactionTable.setItems(mainApp.getCurrentTransactionData(date));
+		transactionTable.setItems(mainApp.getTransactions(date));
 	}
 
 	/**
@@ -112,7 +112,7 @@ public class TransactionOverviewController {
 	private void showTransactionDetails(Transaction transaction) {
 		if (transaction != null) {
 			// Fill the labels with info from the transaction object.
-			uidLabel.setText(String.valueOf(mainApp.getCurrentTransactionData(date).indexOf(transaction)));
+			uidLabel.setText(String.valueOf(mainApp.getTransactions(date).indexOf(transaction)));
 			descriptionLabel.setText(transaction.getDescription());
 			sumLabel.setText(transaction.getSum() + "руб.");
 		} else {
@@ -174,7 +174,7 @@ public class TransactionOverviewController {
 		Transaction tempTransaction = new Transaction();
 		boolean okClicked = mainApp.showTransactionEditDialog(tempTransaction);
 		if (okClicked) {
-			mainApp.getTransactionData().getTransactions().add(tempTransaction);
+			mainApp.getTransactions(date).add(tempTransaction);
 		}
 	}
 

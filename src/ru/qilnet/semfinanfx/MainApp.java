@@ -11,12 +11,18 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import ru.qilnet.semfinanfx.model.AllTransactionListWrapper;
 import ru.qilnet.semfinanfx.model.Transaction;
-import ru.qilnet.semfinanfx.model.TransactionList;
+import ru.qilnet.semfinanfx.model.TransactionListWrapper;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
 import java.io.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.prefs.Preferences;
+import java.util.stream.Collectors;
 
 public class MainApp extends Application {
 
@@ -24,35 +30,54 @@ public class MainApp extends Application {
 	private BorderPane rootLayout;
 
 	/**
-	 * The data of all Transactions.
+	 * The observable list of all Transactions.
 	 */
-	private TransactionList transactionData;
+	private List<TransactionListWrapper> allTransactions;
+
+	/**
+	 * The observable list of month Transactions.
+	 */
+	private ObservableList<Transaction> transactions = FXCollections.observableArrayList(new Transaction());
 
 	/**
 	 * Constructor
 	 */
 	public MainApp() {
 		System.out.println("method MainApp");
+		allTransactions = new ArrayList<>();
+		TransactionListWrapper monthTransactions = new TransactionListWrapper();
+		monthTransactions.setTransactions(FXCollections.observableArrayList(new Transaction()));
+		allTransactions.add(monthTransactions);
+
 	}
 
 	/**
-	 * Returns the data as an observable list of Transactions.
+	 * Returns the data as an observable list of all Transactions.
 	 *
 	 * @return list of transaction
-	public ObservableList<Transaction> getCurrentTransactionData(LocalDate date) {
-		return (ObservableList<Transaction>) transactionData.getTransactions(date);
-	}
 	 */
-
-	public ObservableList<Transaction> getCurrentTransactionData(LocalDate date) {
-		return FXCollections.observableArrayList(transactionData.getTransactions(date));
+	public ObservableList<Transaction> getTransactions() {
+		return transactions;
 	}
 
-	public TransactionList getTransactionData() {
-		return transactionData;
+	/**
+	 * Returns the data as an observable list of Transactions for given month.
+	 *
+	 * @return list of transaction
+	 */
+	public ObservableList<Transaction> getTransactions(LocalDate date) {
+		ObservableList<Transaction> tempTransactions = FXCollections.observableArrayList();
+		int lm = date.lengthOfMonth();
+		tempTransactions.addAll(transactions.stream().filter(transaction -> transaction.getDate().isBefore(date.withDayOfMonth(lm)) &&
+				transaction.getDate().isAfter(date.withDayOfMonth(1))).collect(Collectors.toList()));
+		if (tempTransactions.size() == 0) {
+			tempTransactions.add(new Transaction());
+		}
+		return tempTransactions;
 	}
-	public void setTransactionData(TransactionList transactionData) {
-		this.transactionData = transactionData;
+
+	public void setTransactionData(ObservableList<Transaction> transactions) {
+		this.transactions = transactions;
 	}
 	/**
 	 * TODO method to set MonthTransactionData for current month
@@ -210,21 +235,23 @@ public class MainApp extends Application {
 	 * @param file
 	 */
 	public void loadTransactionData(File file) {
+		System.out.println("method loadTransactionData");
 		FileInputStream fIn = null;
 		ObjectInputStream oIn = null;
 		try {
 			fIn = new FileInputStream(file);
 			oIn = new ObjectInputStream(fIn);
-			transactionData = (TransactionList) oIn.readObject();
+			/** TODO Transaction list wrapper for load from file
+			transactions = oIn.readObject();
+			 */
 		} catch (FileNotFoundException e) {
 			Alert alert = new Alert(Alert.AlertType.ERROR);
 			alert.setTitle("Ошибка");
 			alert.setHeaderText("Не удалось загрузить данные из файла:\n" + file.getPath());
 			alert.setContentText("Будет создана новая база данных");
 			alert.showAndWait();
-			transactionData = new TransactionList();
 
-		} catch (IOException | ClassNotFoundException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
@@ -235,12 +262,37 @@ public class MainApp extends Application {
 	 * @param file
 	 */
 	public void saveTransactionData(File file) {
+		try {
+			JAXBContext context = JAXBContext
+					.newInstance(TransactionListWrapper.class);
+			Marshaller m = context.createMarshaller();
+			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+			// Wrapping our person data.
+			AllTransactionListWrapper wrapper = new AllTransactionListWrapper();
+			wrapper.setTransactions(allTransactions);
+
+			// Marshalling and saving XML to the file.
+			m.marshal(wrapper, file);
+
+			// Save the file path to the registry.
+			setTransactionFilePath(file);
+		} catch (Exception e) { // catches ANY exception
+			Alert alert = new Alert(Alert.AlertType.ERROR);
+			alert.setTitle("Ошибка");
+			alert.setHeaderText("Не удалось сохранить данные в файл:\n" + file.getPath());
+			alert.setContentText(e.toString());
+			alert.showAndWait();
+		}
+		/** TODO Transaction list wrapper for save into file
 		FileOutputStream fOut = null;
 		ObjectOutputStream oOut = null;
 		try {
 			fOut = new FileOutputStream(file);
 			oOut = new ObjectOutputStream(fOut);
+			/** TODO Transaction list wrapper for save into file
 			oOut.writeObject(transactionData);
+
 			setTransactionFilePath(file);
 		} catch (IOException e) {
 			try {
@@ -256,6 +308,7 @@ public class MainApp extends Application {
 				alert.showAndWait();
 			}
 		}
+		 */
 	}
 
 	public static void main(String[] args) {

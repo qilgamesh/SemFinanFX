@@ -1,9 +1,10 @@
 package ru.qilnet.semfinanfx;
 
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.stage.FileChooser;
-import ru.qilnet.semfinanfx.model.TransactionList;
+import ru.qilnet.semfinanfx.model.Transaction;
 
 import java.io.File;
 
@@ -33,7 +34,7 @@ public class RootLayoutController {
 	 */
 	@FXML
 	private void handleNew() {
-		mainApp.setTransactionData(new TransactionList());
+		mainApp.setTransactionData(FXCollections.observableArrayList(new Transaction()));
 		mainApp.setTransactionFilePath(null);
 	}
 
