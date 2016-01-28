@@ -71,13 +71,27 @@ public class TransactionEditDialogController {
 	}
 
 	/**
-	 * Called when the user clicks ok.
+	 * Called when the user clicks credit.
 	 */
 	@FXML
-	private void handleOk() {
+	private void handleCredit() {
 		if (isInputValid()) {
 			transaction.setDescription(descriptionField.getText());
 			transaction.setSum(sumField.getText());
+			transaction.setDayOfMonth(dayPicker.getValue().getDayOfMonth());
+			okClicked = true;
+			dialogStage.close();
+		}
+	}
+
+	/**
+	 * Called when the user clicks debit.
+	 */
+	@FXML
+	private void handleDebit() {
+		if (isInputValid()) {
+			transaction.setdDescription(descriptionField.getText());
+			transaction.setdSum(sumField.getText());
 			transaction.setDayOfMonth(dayPicker.getValue().getDayOfMonth());
 			okClicked = true;
 			dialogStage.close();

@@ -5,8 +5,8 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -140,7 +140,7 @@ public class MainApp extends Application {
 			// Load the fxml file and create a new stage for the popup dialog.
 			FXMLLoader loader = new FXMLLoader();
 			loader.setLocation(MainApp.class.getResource("view/TransactionEditDialog.fxml"));
-			AnchorPane page = loader.load();
+			GridPane page = loader.load();
 
 			// Create the dialog Stage.
 			Stage dialogStage = new Stage();

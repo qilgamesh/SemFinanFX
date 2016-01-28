@@ -14,6 +14,8 @@ import java.time.LocalDate;
 public class Transaction implements Serializable {
 	private transient final StringProperty description;
 	private transient final StringProperty sum;
+	private transient final StringProperty ddescription;
+	private transient final StringProperty dsum;
 	private transient final StringProperty dayOfMonth;
 
 	private boolean isScheduled = false;
@@ -55,8 +57,18 @@ public class Transaction implements Serializable {
 	 * @param isScheduled
 	 */
 	public Transaction(int dayOfMonth, String description, String sum, boolean isScheduled) {
-		this.description = new SimpleStringProperty(description);
-		this.sum = new SimpleStringProperty(sum);
+		if ((sum != null) && (Integer.valueOf(sum) < 0)) {
+				this.description = new SimpleStringProperty(null);
+				this.sum = new SimpleStringProperty(null);
+				this.ddescription = new SimpleStringProperty(description);
+				this.dsum = new SimpleStringProperty(sum);
+			} else {
+				this.ddescription = new SimpleStringProperty(null);
+				this.dsum = new SimpleStringProperty(null);
+				this.description = new SimpleStringProperty(description);
+				this.sum = new SimpleStringProperty(sum);
+			}
+
 		this.isScheduled = isScheduled;
 		this.dayOfMonth = new SimpleStringProperty(String.valueOf(dayOfMonth));
 	}
@@ -69,8 +81,16 @@ public class Transaction implements Serializable {
 		this.description.set(description);
 	}
 
+	public void setdDescription(String description) {
+		this.ddescription.set(description);
+	}
+
 	public StringProperty descriptionProperty() {
 		return description;
+	}
+
+	public StringProperty ddescriptionProperty() {
+		return ddescription;
 	}
 
 	public String getSum() {
@@ -81,8 +101,16 @@ public class Transaction implements Serializable {
 		this.sum.set(sum);
 	}
 
+	public void setdSum(String sum) {
+		this.dsum.set(sum);
+	}
+
 	public StringProperty sumProperty() {
 		return sum;
+	}
+
+	public StringProperty dsumProperty() {
+		return dsum;
 	}
 
 	public String getDayOfMonth(){
@@ -111,4 +139,5 @@ public class Transaction implements Serializable {
 	public void setNotScheduled() {
 		isScheduled = false;
 	}
+
 }

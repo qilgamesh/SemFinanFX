@@ -67,8 +67,8 @@ public class TransactionOverviewController {
 		creditDescriptionColumn.setCellValueFactory(cellData -> cellData.getValue().descriptionProperty());
 		creditSumColumn.setCellValueFactory(cellData -> cellData.getValue().sumProperty());
 
-		debitDescriptionColumn.setCellValueFactory(cellData -> cellData.getValue().descriptionProperty());
-		debitSumColumn.setCellValueFactory(cellData -> cellData.getValue().sumProperty());
+		debitDescriptionColumn.setCellValueFactory(cellData -> cellData.getValue().ddescriptionProperty());
+		debitSumColumn.setCellValueFactory(cellData -> cellData.getValue().dsumProperty());
 
 		// Clear transaction details.
 		showTransactionDetails(null);
