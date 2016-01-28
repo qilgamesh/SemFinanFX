@@ -7,6 +7,7 @@ import javafx.stage.FileChooser;
 import ru.qilnet.semfinanfx.model.Transaction;
 
 import java.io.File;
+import java.time.LocalDate;
 
 /**
  * The controller for the root layout. The root layout provides the basic
@@ -26,6 +27,7 @@ public class RootLayoutController {
 	 * @param mainApp
 	 */
 	public void setMainApp(MainApp mainApp) {
+		System.out.println("RootLayoutController setMainApp");
 		this.mainApp = mainApp;
 	}
 
@@ -34,7 +36,7 @@ public class RootLayoutController {
 	 */
 	@FXML
 	private void handleNew() {
-		mainApp.setTransactionData(FXCollections.observableArrayList(new Transaction()));
+		mainApp.setTransactionData(LocalDate.now(), FXCollections.observableArrayList(new Transaction()));
 		mainApp.setTransactionFilePath(null);
 	}
 

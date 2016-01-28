@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
 <?import java.lang.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
@@ -84,8 +86,15 @@
    <top>
       <HBox prefHeight="35.0" BorderPane.alignment="CENTER">
          <children>
+            <Button mnemonicParsing="false" onAction="#handlePrevMonth" text="&lt;&lt;" />
               <ChoiceBox fx:id="monthChoice" prefWidth="150.0" />
-            <ChoiceBox fx:id="yearChoice" layoutX="10.0" layoutY="10.0" prefWidth="150.0" />
+            <Button mnemonicParsing="false" onAction="#handleNextMonth" text="&gt;&gt;" />
+            <Separator orientation="VERTICAL" prefHeight="30.0" prefWidth="41.0" HBox.hgrow="ALWAYS" />
+            <Label fx:id="yearLabel" alignment="CENTER_RIGHT" prefHeight="30.0" prefWidth="76.0" text="2016" textAlignment="CENTER" textFill="#822121">
+               <font>
+                  <Font size="24.0" />
+               </font>
+            </Label>
          </children>
          <padding>
             <Insets bottom="5.0" top="5.0" />

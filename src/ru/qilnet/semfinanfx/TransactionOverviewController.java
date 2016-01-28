@@ -14,7 +14,7 @@ public class TransactionOverviewController {
 	@FXML
 	private ChoiceBox<String> monthChoice;
 	@FXML
-	private ChoiceBox<String> yearChoice;
+	private Label yearLabel;
 	@FXML
 	private TableView<Transaction> transactionTable;
 	@FXML
@@ -49,6 +49,8 @@ public class TransactionOverviewController {
 	 * The constructor is called before the initialize() method.
 	 */
 	public TransactionOverviewController() {
+		System.out.println("TransactionOverviewController constructor");
+		date = LocalDate.now();
 	}
 
 	/**
@@ -57,6 +59,8 @@ public class TransactionOverviewController {
 	 */
 	@FXML
 	private void initialize() {
+		System.out.println("TransactionOverviewController initialize");
+
 		// Initialize the transaction table with the two columns.
 		dayColumn.setCellValueFactory(cellData -> cellData.getValue().dayOfMonthProperty());
 		dayColumn.setStyle("-fx-alignment: CENTER;");
@@ -75,18 +79,17 @@ public class TransactionOverviewController {
 		transactionTable.getSelectionModel().selectedItemProperty().addListener(
 				(observable, oldValue, newValue) -> showTransactionDetails(newValue));
 
-		date = LocalDate.now();
+		yearLabel.setText(String.valueOf(date.getYear()));
+
 		monthChoice.setItems(DateUtil.getListOfMonths());
 		monthChoice.setValue(DateUtil.getMonthName(date));
 
-
 		monthChoice.getSelectionModel().selectedIndexProperty().addListener((ov, value, new_value) -> {
-			date = date.withMonth(new_value.intValue() + 1);
+			date = date.withYear(Integer.valueOf(yearLabel.getText())).withMonth(new_value.intValue() + 1);
 			transactionTable.setItems(mainApp.getTransactions(date));
 		});
 
-		yearChoice.getItems().add(String.valueOf(LocalDate.now().getYear()));
-		//yearChoice.setValue();
+
 	}
 
 	/**
@@ -95,6 +98,7 @@ public class TransactionOverviewController {
 	 * @param mainApp
 	 */
 	public void setMainApp(MainApp mainApp) {
+		System.out.println("TransactionOverviewController setMainApp");
 		this.mainApp = mainApp;
 
 		// Add observable list data to the table
@@ -131,7 +135,7 @@ public class TransactionOverviewController {
 	private void handleEditTransaction() {
 		Transaction selectedTransaction = transactionTable.getSelectionModel().getSelectedItem();
 		if (selectedTransaction != null) {
-			boolean okClicked = mainApp.showTransactionEditDialog(selectedTransaction);
+			boolean okClicked = mainApp.showTransactionEditDialog(date, selectedTransaction);
 			if (okClicked) {
 				showTransactionDetails(selectedTransaction);
 			}
@@ -172,9 +176,35 @@ public class TransactionOverviewController {
 	@FXML
 	private void handleNewTransaction() {
 		Transaction tempTransaction = new Transaction();
-		boolean okClicked = mainApp.showTransactionEditDialog(tempTransaction);
+		boolean okClicked = mainApp.showTransactionEditDialog(date, tempTransaction);
 		if (okClicked) {
 			mainApp.getTransactions(date).add(tempTransaction);
+		}
+	}
+
+	/**
+	 * Called when the user clicks the prev button. Set value to name of prev month
+	 */
+	@FXML
+	private void handlePrevMonth() {
+		if (date.getMonthValue() == 1) {
+			yearLabel.setText(String.valueOf(Integer.valueOf(yearLabel.getText()) - 1));
+			monthChoice.setValue(DateUtil.getMonthName(12));
+		} else {
+			monthChoice.setValue(DateUtil.getMonthName(date.getMonthValue() - 1));
+		}
+	}
+
+	/**
+	 * Called when the user clicks the next button. Set value to name of next month
+	 */
+	@FXML
+	private void handleNextMonth() {
+		if (date.getMonthValue() == 12) {
+			yearLabel.setText(String.valueOf(Integer.valueOf(yearLabel.getText()) + 1));
+			monthChoice.setValue(DateUtil.getMonthName(1));
+		} else {
+			monthChoice.setValue(DateUtil.getMonthName(date.getMonthValue() + 1));
 		}
 	}
 

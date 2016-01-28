@@ -7,6 +7,8 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import ru.qilnet.semfinanfx.model.Transaction;
 
+import java.time.LocalDate;
+
 /**
  * Dialog to edit details of a transaction
  *
@@ -47,11 +49,16 @@ public class TransactionEditDialogController {
 	 *
 	 * @param transaction
 	 */
-	public void setTransaction(Transaction transaction) {
+	public void setTransaction(LocalDate date, Transaction transaction) {
 		this.transaction = transaction;
 		descriptionField.setText(transaction.getDescription());
 		sumField.setText(transaction.getSum());
-		dayPicker.setValue(transaction.getDate());
+		if (LocalDate.now().isBefore(date)) {
+			dayPicker.setValue(date.withDayOfMonth(1));
+		} else {
+			dayPicker.setValue(date.withDayOfMonth(Integer.valueOf(transaction.getDayOfMonth())));
+		}
+
 	}
 
 	/**
@@ -71,7 +78,7 @@ public class TransactionEditDialogController {
 		if (isInputValid()) {
 			transaction.setDescription(descriptionField.getText());
 			transaction.setSum(sumField.getText());
-			transaction.setDate(dayPicker.getValue());
+			transaction.setDayOfMonth(dayPicker.getValue().getDayOfMonth());
 			okClicked = true;
 			dialogStage.close();
 		}

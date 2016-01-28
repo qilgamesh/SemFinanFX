@@ -1,7 +1,6 @@
 package ru.qilnet.semfinanfx;
 
 import javafx.application.Application;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -11,18 +10,16 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import ru.qilnet.semfinanfx.model.AllTransactionListWrapper;
 import ru.qilnet.semfinanfx.model.Transaction;
-import ru.qilnet.semfinanfx.model.TransactionListWrapper;
+import ru.qilnet.semfinanfx.model.TransactionsData;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
-import java.io.*;
+import javax.xml.bind.Unmarshaller;
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.prefs.Preferences;
-import java.util.stream.Collectors;
 
 public class MainApp extends Application {
 
@@ -32,32 +29,14 @@ public class MainApp extends Application {
 	/**
 	 * The observable list of all Transactions.
 	 */
-	private List<TransactionListWrapper> allTransactions;
-
-	/**
-	 * The observable list of month Transactions.
-	 */
-	private ObservableList<Transaction> transactions = FXCollections.observableArrayList(new Transaction());
+	private TransactionsData allTransactions;
 
 	/**
 	 * Constructor
 	 */
 	public MainApp() {
 		System.out.println("method MainApp");
-		allTransactions = new ArrayList<>();
-		TransactionListWrapper monthTransactions = new TransactionListWrapper();
-		monthTransactions.setTransactions(FXCollections.observableArrayList(new Transaction()));
-		allTransactions.add(monthTransactions);
-
-	}
-
-	/**
-	 * Returns the data as an observable list of all Transactions.
-	 *
-	 * @return list of transaction
-	 */
-	public ObservableList<Transaction> getTransactions() {
-		return transactions;
+		allTransactions = new TransactionsData();
 	}
 
 	/**
@@ -66,26 +45,16 @@ public class MainApp extends Application {
 	 * @return list of transaction
 	 */
 	public ObservableList<Transaction> getTransactions(LocalDate date) {
-		ObservableList<Transaction> tempTransactions = FXCollections.observableArrayList();
-		int lm = date.lengthOfMonth();
-		tempTransactions.addAll(transactions.stream().filter(transaction -> transaction.getDate().isBefore(date.withDayOfMonth(lm)) &&
-				transaction.getDate().isAfter(date.withDayOfMonth(1))).collect(Collectors.toList()));
-		if (tempTransactions.size() == 0) {
-			tempTransactions.add(new Transaction());
-		}
-		return tempTransactions;
+		return allTransactions.getMonthTransactions(date).getMonthTransactions();
 	}
 
-	public void setTransactionData(ObservableList<Transaction> transactions) {
-		this.transactions = transactions;
+	public void setTransactionData() {
+		allTransactions = new TransactionsData();
 	}
-	/**
-	 * TODO method to set MonthTransactionData for current month
-	 * <p>
-	 * public setTransactionData(ObservableList<Transaction> currentTransactionData) {
-	 * this.currentTransactionData = currentTransactionData;
-	 * }
-	 */
+
+	public void setTransactionData(LocalDate date, ObservableList<Transaction> transactions) {
+		allTransactions.getMonthTransactions(date).setMonthTransactions(transactions);
+	}
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -166,7 +135,7 @@ public class MainApp extends Application {
 	 * @param transaction the person object to be edited
 	 * @return true if the user clicked OK, false otherwise.
 	 */
-	public boolean showTransactionEditDialog(Transaction transaction) {
+	public boolean showTransactionEditDialog(LocalDate date, Transaction transaction) {
 		try {
 			// Load the fxml file and create a new stage for the popup dialog.
 			FXMLLoader loader = new FXMLLoader();
@@ -184,7 +153,7 @@ public class MainApp extends Application {
 			// Set the transaction into the controller.
 			TransactionEditDialogController controller = loader.getController();
 			controller.setDialogStage(dialogStage);
-			controller.setTransaction(transaction);
+			controller.setTransaction(date, transaction);
 
 			// Show the dialog and wait until the user closes it
 			dialogStage.showAndWait();
@@ -235,25 +204,23 @@ public class MainApp extends Application {
 	 * @param file
 	 */
 	public void loadTransactionData(File file) {
-		System.out.println("method loadTransactionData");
-		FileInputStream fIn = null;
-		ObjectInputStream oIn = null;
+
 		try {
-			fIn = new FileInputStream(file);
-			oIn = new ObjectInputStream(fIn);
-			/** TODO Transaction list wrapper for load from file
-			transactions = oIn.readObject();
-			 */
-		} catch (FileNotFoundException e) {
+			JAXBContext context = JAXBContext
+					.newInstance(TransactionsData.class);
+			Unmarshaller um = context.createUnmarshaller();
+			// Reading XML from the file and unmarshalling.
+			allTransactions = (TransactionsData) um.unmarshal(file);
+			// Save the file path to the registry.
+			setTransactionFilePath(file);
+		} catch (Exception e) { // catches ANY exception
 			Alert alert = new Alert(Alert.AlertType.ERROR);
 			alert.setTitle("Ошибка");
 			alert.setHeaderText("Не удалось загрузить данные из файла:\n" + file.getPath());
 			alert.setContentText("Будет создана новая база данных");
 			alert.showAndWait();
-
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
+
 	}
 
 	/**
@@ -263,18 +230,11 @@ public class MainApp extends Application {
 	 */
 	public void saveTransactionData(File file) {
 		try {
-			JAXBContext context = JAXBContext
-					.newInstance(TransactionListWrapper.class);
+			JAXBContext context = JAXBContext.newInstance(TransactionsData.class);
 			Marshaller m = context.createMarshaller();
 			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-
-			// Wrapping our person data.
-			AllTransactionListWrapper wrapper = new AllTransactionListWrapper();
-			wrapper.setTransactions(allTransactions);
-
 			// Marshalling and saving XML to the file.
-			m.marshal(wrapper, file);
-
+			m.marshal(allTransactions, file);
 			// Save the file path to the registry.
 			setTransactionFilePath(file);
 		} catch (Exception e) { // catches ANY exception
@@ -284,31 +244,7 @@ public class MainApp extends Application {
 			alert.setContentText(e.toString());
 			alert.showAndWait();
 		}
-		/** TODO Transaction list wrapper for save into file
-		FileOutputStream fOut = null;
-		ObjectOutputStream oOut = null;
-		try {
-			fOut = new FileOutputStream(file);
-			oOut = new ObjectOutputStream(fOut);
-			/** TODO Transaction list wrapper for save into file
-			oOut.writeObject(transactionData);
 
-			setTransactionFilePath(file);
-		} catch (IOException e) {
-			try {
-				assert oOut != null;
-				oOut.flush();
-				oOut.close();
-				fOut.close();
-			} catch (IOException ioe) {
-				Alert alert = new Alert(Alert.AlertType.ERROR);
-				alert.setTitle("Ошибка");
-				alert.setHeaderText("Не удалось сохранить данные в файл:\n" + file.getPath());
-				alert.setContentText(ioe.toString());
-				alert.showAndWait();
-			}
-		}
-		 */
 	}
 
 	public static void main(String[] args) {
