@@ -31,7 +31,7 @@ public class MainApp extends Application {
 	 */
 	private TransactionsData allTransactions;
 
-	//private ObservableList<Transaction> scheduledTransactions = FXCollections.emptyObservableList();
+	//private ObservableList<Transaction> scheduledTransactions = FXCollections.observableArrayList();
 
 	/**
 	 * Constructor
@@ -45,20 +45,32 @@ public class MainApp extends Application {
 	 * Returns the data as an observable list of Transactions for given month.
 	 *
 	 * @param date of needed transaction list
+	 * @return list of not scheduled transaction
+	 */
+	public ObservableList<Transaction> getTransactions(LocalDate date) {
+		return getTransactions(date, false);
+	}
+
+	/**
+	 * Returns the data as an observable list of Transactions for given month.
+	 *
+	 * @param date of needed transaction list
 	 * @param scheduled
 	 * @return list of not scheduled transaction
 	 */
 	public ObservableList<Transaction> getTransactions(LocalDate date, boolean scheduled) {
-		return allTransactions.getMonthTransactions(date).getTransactionsList(scheduled);
+		return allTransactions.getMonthTransactions(date).getTransactionsList();
 	}
 
 	public TransactionsData getAllTransactions() {
 		return allTransactions;
 	}
 
-	public void setTransactionData() {
+	/**
+	public void setAllTransactionData() {
 		allTransactions = new TransactionsData();
 	}
+	*/
 
 	public void setTransactionData(LocalDate date, ObservableList<Transaction> transactions) {
 		allTransactions.getMonthTransactions(date).setMonthTransactions(transactions);

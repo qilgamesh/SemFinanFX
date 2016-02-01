@@ -50,18 +50,22 @@ public class MonthTransactions {
 		return monthTransactions;
 	}
 
-	public ObservableList<Transaction> getTransactionsList(boolean scheduled) {
+	public ObservableList<Transaction> getScheduledTransactionsList() {
 		if (monthTransactions != null) {
 			ObservableList<Transaction> tempList = FXCollections.observableArrayList();
 			for (Transaction tr :
 					monthTransactions) {
-				if (tr.getScheduled() == scheduled) {
+				if (tr.getScheduled()) {
 					tempList.add(tr);
 				}
 			}
 			return tempList;
 		}
-		return FXCollections.emptyObservableList();
+		return FXCollections.observableArrayList();
+	}
+
+	public ObservableList<Transaction> getTransactionsList() {
+		return monthTransactions;
 	}
 
 	public void setMonthTransactions(ObservableList<Transaction> transactions) {
@@ -69,6 +73,10 @@ public class MonthTransactions {
 			monthTransactions.clear();
 		}
 		monthTransactions = transactions;
+	}
+
+	public void add(Transaction transaction) {
+		monthTransactions.add(transaction);
 	}
 
 	@XmlJavaTypeAdapter(LocalDateAdapter.class)

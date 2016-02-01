@@ -83,7 +83,9 @@ public class TransactionEditDialogController {
 			transaction.setDescription(descriptionField.getText());
 			transaction.setCreditSum(sumField.getText());
 			transaction.setDayOfMonth(dayPicker.getValue().getDayOfMonth());
-			transaction.setScheduled(scheduledCheckBox.isSelected());
+			if (scheduledCheckBox.isSelected()) {
+				transaction.setScheduled(true);
+			}
 			okClicked = true;
 			dialogStage.close();
 		}
@@ -98,7 +100,9 @@ public class TransactionEditDialogController {
 			transaction.setDescription(descriptionField.getText());
 			transaction.setDebitSum(sumField.getText());
 			transaction.setDayOfMonth(dayPicker.getValue().getDayOfMonth());
-			transaction.setScheduled(scheduledCheckBox.isSelected());
+			if (scheduledCheckBox.isSelected()) {
+				transaction.setScheduled(true);
+			}
 			okClicked = true;
 			dialogStage.close();
 		}

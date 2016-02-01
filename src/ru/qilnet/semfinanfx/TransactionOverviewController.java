@@ -100,13 +100,9 @@ public class TransactionOverviewController {
 	 * @param mainApp
 	 */
 	public void setMainApp(MainApp mainApp) {
-		System.out.println("TransactionOverviewController setMainApp");
 		this.mainApp = mainApp;
-
 		// Add observable list data to the table
-
-		transactionTable.setItems(mainApp.getTransactions(date, false));
-		System.out.println("updateTotals in method setMainApp");
+		transactionTable.setItems(mainApp.getTransactions(date));
 		updateTotals();
 	}
 
@@ -146,7 +142,7 @@ public class TransactionOverviewController {
 			okClicked = mainApp.showTransactionEditDialog(date, tempTransaction);
 		}
 		if (okClicked) {
-			mainApp.getTransactions(date, false).add(tempTransaction);
+			mainApp.getTransactions(date).add(tempTransaction);
 			System.out.println("updateTotals in method handleNewTransaction");
 			updateTotals();
 		}
