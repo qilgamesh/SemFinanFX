@@ -31,6 +31,8 @@ public class MainApp extends Application {
 	 */
 	private TransactionsData allTransactions;
 
+	//private ObservableList<Transaction> scheduledTransactions = FXCollections.emptyObservableList();
+
 	/**
 	 * Constructor
 	 */
@@ -42,10 +44,16 @@ public class MainApp extends Application {
 	/**
 	 * Returns the data as an observable list of Transactions for given month.
 	 *
-	 * @return list of transaction
+	 * @param date of needed transaction list
+	 * @param scheduled
+	 * @return list of not scheduled transaction
 	 */
-	public ObservableList<Transaction> getTransactions(LocalDate date) {
-		return allTransactions.getMonthTransactions(date).getMonthTransactions();
+	public ObservableList<Transaction> getTransactions(LocalDate date, boolean scheduled) {
+		return allTransactions.getMonthTransactions(date).getTransactionsList(scheduled);
+	}
+
+	public TransactionsData getAllTransactions() {
+		return allTransactions;
 	}
 
 	public void setTransactionData() {
@@ -103,7 +111,7 @@ public class MainApp extends Application {
 		try {
 			// Load transaction overview.
 			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(MainApp.class.getResource("view/TransactionsOverview.fxml"));
+			loader.setLocation(MainApp.class.getResource("view/RootOverview2.fxml"));
 			Pane transactionsOverview = loader.load();
 
 			// Set transaction overview into the center of root layout.
@@ -204,11 +212,11 @@ public class MainApp extends Application {
 	 * @param file
 	 */
 	public void loadTransactionData(File file) {
-
+		System.out.println("method loadTransactionData");
 		try {
-			JAXBContext context = JAXBContext
-					.newInstance(TransactionsData.class);
+			JAXBContext context = JAXBContext.newInstance(TransactionsData.class);
 			Unmarshaller um = context.createUnmarshaller();
+
 			// Reading XML from the file and unmarshalling.
 			allTransactions = (TransactionsData) um.unmarshal(file);
 			// Save the file path to the registry.
@@ -220,7 +228,6 @@ public class MainApp extends Application {
 			alert.setContentText("Будет создана новая база данных");
 			alert.showAndWait();
 		}
-
 	}
 
 	/**
@@ -244,10 +251,10 @@ public class MainApp extends Application {
 			alert.setContentText(e.toString());
 			alert.showAndWait();
 		}
-
 	}
 
 	public static void main(String[] args) {
+		System.out.println("method main");
 		launch(args);
 	}
 }

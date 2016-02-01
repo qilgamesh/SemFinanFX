@@ -5,7 +5,7 @@
                 <Day id="1">
                     <Transaction>
                         <description>Начальный остаток</description>
-                        <sum>1000</sum>
+                        <creditSum>1000</creditSum>
                     </Transaction>
                     <Transaction>
                     </Transaction>
@@ -21,7 +21,7 @@
                 <Day id="1">
                     <Transaction>
                         <description>Начальный остаток</description>
-                        <sum>1000</sum>
+                        <creditSum>1000</creditSum>
                     </Transaction>
                     <Transaction>
                     </Transaction>
@@ -39,7 +39,7 @@
                 <Day id="1">
                     <Transaction>
                         <description>Начальный остаток</description>
-                        <sum>1000</sum>
+                        <creditSum>1000</creditSum>
                     </Transaction>
                     <Transaction>
                     </Transaction>
@@ -55,7 +55,7 @@
                 <Day id="1">
                     <Transaction>
                         <description>Начальный остаток</description>
-                        <sum>1000</sum>
+                        <creditSum>1000</creditSum>
                     </Transaction>
                     <Transaction>
                     </Transaction>

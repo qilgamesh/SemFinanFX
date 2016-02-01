@@ -13,9 +13,8 @@ import java.time.LocalDate;
  */
 public class Transaction implements Serializable {
 	private transient final StringProperty description;
-	private transient final StringProperty sum;
-	private transient final StringProperty ddescription;
-	private transient final StringProperty dsum;
+	private transient final StringProperty creditSum;
+	private transient final StringProperty debitSum;
 	private transient final StringProperty dayOfMonth;
 
 	private boolean isScheduled = false;
@@ -58,17 +57,13 @@ public class Transaction implements Serializable {
 	 */
 	public Transaction(int dayOfMonth, String description, String sum, boolean isScheduled) {
 		if ((sum != null) && (Integer.valueOf(sum) < 0)) {
-				this.description = new SimpleStringProperty(null);
-				this.sum = new SimpleStringProperty(null);
-				this.ddescription = new SimpleStringProperty(description);
-				this.dsum = new SimpleStringProperty(sum);
+				this.creditSum = new SimpleStringProperty(null);
+				this.debitSum = new SimpleStringProperty(sum);
 			} else {
-				this.ddescription = new SimpleStringProperty(null);
-				this.dsum = new SimpleStringProperty(null);
-				this.description = new SimpleStringProperty(description);
-				this.sum = new SimpleStringProperty(sum);
+				this.debitSum = new SimpleStringProperty(null);
+				this.creditSum = new SimpleStringProperty(sum);
 			}
-
+		this.description = new SimpleStringProperty(description);
 		this.isScheduled = isScheduled;
 		this.dayOfMonth = new SimpleStringProperty(String.valueOf(dayOfMonth));
 	}
@@ -81,36 +76,38 @@ public class Transaction implements Serializable {
 		this.description.set(description);
 	}
 
-	public void setdDescription(String description) {
-		this.ddescription.set(description);
-	}
-
 	public StringProperty descriptionProperty() {
 		return description;
 	}
 
-	public StringProperty ddescriptionProperty() {
-		return ddescription;
+	public String getCreditSum() {
+		return creditSum.get();
 	}
 
-	public String getSum() {
-		return sum.get();
+	public String getDebitSum() {
+		return debitSum.get();
 	}
 
-	public void setSum(String sum) {
-		this.sum.set(sum);
+	public void setCreditSum(String creditSum) {
+		if (debitSum != null) {
+			debitSum.set(null);
+		}
+		this.creditSum.set(creditSum);
 	}
 
-	public void setdSum(String sum) {
-		this.dsum.set(sum);
+	public void setDebitSum(String sum) {
+		if (creditSum != null) {
+			creditSum.set(null);
+		}
+		this.debitSum.set(sum);
 	}
 
-	public StringProperty sumProperty() {
-		return sum;
+	public StringProperty creditSumProperty() {
+		return creditSum;
 	}
 
-	public StringProperty dsumProperty() {
-		return dsum;
+	public StringProperty debitSumProperty() {
+		return debitSum;
 	}
 
 	public String getDayOfMonth(){
@@ -128,16 +125,13 @@ public class Transaction implements Serializable {
 	public StringProperty dayOfMonthProperty() {
 		return dayOfMonth;
 	}
-	public boolean getIsScheduled() {
+
+	public boolean getScheduled() {
 		return isScheduled;
 	}
 
-	public void setScheduled() {
-		isScheduled = true;
-	}
-
-	public void setNotScheduled() {
-		isScheduled = false;
+	public void setScheduled(boolean selected) {
+		isScheduled = selected;
 	}
 
 }

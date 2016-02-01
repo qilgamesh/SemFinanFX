@@ -1,0 +1,19 @@
+.table-view .dayColumn {
+    -fx-alignment: CENTER;
+}
+.table-view .creditColumn {
+    -fx-alignment: CENTER;
+    -fx-text-fill: blue;
+}
+.table-view .debitColumn {
+    -fx-alignment: CENTER;
+    -fx-text-fill: red;
+}
+
+.label .creditTotalLabel {
+    -fx-text-fill: blue;
+}
+
+.label .debitTotalLabel {
+    -fx-text-fill: red;
+}

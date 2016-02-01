@@ -2,6 +2,7 @@ package ru.qilnet.semfinanfx;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -22,6 +23,10 @@ public class TransactionEditDialogController {
 	private TextField sumField;
 	@FXML
 	private DatePicker dayPicker;
+	@FXML
+	private CheckBox scheduledCheckBox;
+	@FXML
+	private CheckBox everyMonthCheckBox;
 
 	private Stage dialogStage;
 	private Transaction transaction;
@@ -52,13 +57,12 @@ public class TransactionEditDialogController {
 	public void setTransaction(LocalDate date, Transaction transaction) {
 		this.transaction = transaction;
 		descriptionField.setText(transaction.getDescription());
-		sumField.setText(transaction.getSum());
-		if (LocalDate.now().isBefore(date)) {
-			dayPicker.setValue(date.withDayOfMonth(1));
+		if (transaction.getCreditSum() == null ) {
+			sumField.setText(transaction.getDebitSum());
 		} else {
-			dayPicker.setValue(date.withDayOfMonth(Integer.valueOf(transaction.getDayOfMonth())));
+			sumField.setText(transaction.getCreditSum());
 		}
-
+		dayPicker.setValue(date);
 	}
 
 	/**
@@ -77,8 +81,9 @@ public class TransactionEditDialogController {
 	private void handleCredit() {
 		if (isInputValid()) {
 			transaction.setDescription(descriptionField.getText());
-			transaction.setSum(sumField.getText());
+			transaction.setCreditSum(sumField.getText());
 			transaction.setDayOfMonth(dayPicker.getValue().getDayOfMonth());
+			transaction.setScheduled(scheduledCheckBox.isSelected());
 			okClicked = true;
 			dialogStage.close();
 		}
@@ -90,9 +95,10 @@ public class TransactionEditDialogController {
 	@FXML
 	private void handleDebit() {
 		if (isInputValid()) {
-			transaction.setdDescription(descriptionField.getText());
-			transaction.setdSum(sumField.getText());
+			transaction.setDescription(descriptionField.getText());
+			transaction.setDebitSum(sumField.getText());
 			transaction.setDayOfMonth(dayPicker.getValue().getDayOfMonth());
+			transaction.setScheduled(scheduledCheckBox.isSelected());
 			okClicked = true;
 			dialogStage.close();
 		}
@@ -143,4 +149,21 @@ public class TransactionEditDialogController {
 			return false;
 		}
 	}
+
+	/**
+	 * Called when the user Scheduled select.
+	 */
+	@FXML
+	private void handleScheduledCheck() {
+		everyMonthCheckBox.setDisable(!scheduledCheckBox.isSelected());
+	}
+
+	/**
+	 * Called when the user EveryMonth select.
+	 */
+	@FXML
+	private void handleEveryMonthCheck() {
+		return;
+	}
+
 }

@@ -15,7 +15,6 @@ import java.time.LocalDate;
 
 public class MonthTransactions {
 
-
 	private LocalDate monthDate;
 	private ObservableList<Transaction> monthTransactions;
 
@@ -51,8 +50,25 @@ public class MonthTransactions {
 		return monthTransactions;
 	}
 
+	public ObservableList<Transaction> getTransactionsList(boolean scheduled) {
+		if (monthTransactions != null) {
+			ObservableList<Transaction> tempList = FXCollections.observableArrayList();
+			for (Transaction tr :
+					monthTransactions) {
+				if (tr.getScheduled() == scheduled) {
+					tempList.add(tr);
+				}
+			}
+			return tempList;
+		}
+		return FXCollections.emptyObservableList();
+	}
+
 	public void setMonthTransactions(ObservableList<Transaction> transactions) {
-		this.monthTransactions = transactions;
+		if (monthTransactions != null) {
+			monthTransactions.clear();
+		}
+		monthTransactions = transactions;
 	}
 
 	@XmlJavaTypeAdapter(LocalDateAdapter.class)
@@ -62,6 +78,35 @@ public class MonthTransactions {
 	}
 
 	public void setMonthDate(LocalDate date) {
-		this.monthDate = date.withDayOfMonth(1);
+		monthDate = date.withDayOfMonth(1);
 	}
+
+	public int getDebitTotal() {
+		if (this.monthTransactions.size() > 0) {
+			int debit = 0;
+			for (Transaction tr :
+					this.monthTransactions) {
+				if (tr.getCreditSum() == null) {
+					debit += Integer.valueOf(tr.getDebitSum());
+				}
+			}
+			return debit;
+		}
+		return 0;
+	}
+
+	public int getCreditTotal() {
+		if (this.monthTransactions.size() > 0) {
+			int credit = 0;
+			for (Transaction tr :
+					this.monthTransactions) {
+				if (tr.getDebitSum() == null) {
+					credit += Integer.valueOf(tr.getCreditSum());
+				}
+			}
+			return credit;
+		}
+		return 0;
+	}
+
 }

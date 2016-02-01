@@ -13,7 +13,7 @@
             <children>
                 <Label fx:id="uidLabel" prefHeight="16.0" prefWidth="57.0" text="day" />
                 <Label fx:id="descriptionLabel" prefHeight="16.0" prefWidth="193.0" text="description" />
-                <Label fx:id="sumLabel" prefHeight="16.0" prefWidth="102.0" text="sum" />
+                <Label fx:id="sumLabel" prefHeight="16.0" prefWidth="102.0" text="creditSum" />
             </children>
         </HBox>
     </bottom>
@@ -56,10 +56,10 @@
                     <items>
                         <TableView fx:id="transactionTable">
                             <columns>
-                                <TableColumn fx:id="creditDescriptionColumn" minWidth="50.0" prefWidth="119.0" text="Описание" />
-                                <TableColumn fx:id="creditSumColumn" minWidth="50.0" text="Приход" />
+                                <TableColumn fx:id="descriptionColumn" minWidth="50.0" prefWidth="119.0" text="Описание" />
+                                <TableColumn fx:id="creditColumn" minWidth="50.0" text="Приход" />
                                 <TableColumn fx:id="dayColumn" editable="false" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" resizable="false" sortable="false" text="День" />
-                                <TableColumn fx:id="debitSumColumn" minWidth="50.0" prefWidth="184.0" text="Расход" />
+                                <TableColumn fx:id="debitColumn" minWidth="50.0" prefWidth="184.0" text="Расход" />
                                 <TableColumn fx:id="debitDescriptionColumn" minWidth="50.0" prefWidth="119.0" text="Описание" />
                             </columns>
                             <columnResizePolicy>
