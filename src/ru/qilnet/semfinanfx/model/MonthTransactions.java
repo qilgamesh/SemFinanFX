@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalDate;
+import java.util.stream.Collectors;
 
 /**
  * @author Andrey Semenyuk
@@ -46,26 +47,17 @@ public class MonthTransactions {
 	}
 
 	@XmlElement(name = "Transaction")
-	public ObservableList<Transaction> getMonthTransactions() {
+	public ObservableList<Transaction> getTransactionsList() {
 		return monthTransactions;
 	}
 
-	public ObservableList<Transaction> getScheduledTransactionsList() {
+	public ObservableList<Transaction> getTransactionsList(boolean scheduled) {
 		if (monthTransactions != null) {
 			ObservableList<Transaction> tempList = FXCollections.observableArrayList();
-			for (Transaction tr :
-					monthTransactions) {
-				if (tr.getScheduled()) {
-					tempList.add(tr);
-				}
-			}
+			tempList.addAll(monthTransactions.stream().filter(tr -> tr.getScheduled() == scheduled).collect(Collectors.toList()));
 			return tempList;
 		}
 		return FXCollections.observableArrayList();
-	}
-
-	public ObservableList<Transaction> getTransactionsList() {
-		return monthTransactions;
 	}
 
 	public void setMonthTransactions(ObservableList<Transaction> transactions) {
@@ -73,10 +65,6 @@ public class MonthTransactions {
 			monthTransactions.clear();
 		}
 		monthTransactions = transactions;
-	}
-
-	public void add(Transaction transaction) {
-		monthTransactions.add(transaction);
 	}
 
 	@XmlJavaTypeAdapter(LocalDateAdapter.class)
@@ -87,34 +75,6 @@ public class MonthTransactions {
 
 	public void setMonthDate(LocalDate date) {
 		monthDate = date.withDayOfMonth(1);
-	}
-
-	public int getDebitTotal() {
-		if (this.monthTransactions.size() > 0) {
-			int debit = 0;
-			for (Transaction tr :
-					this.monthTransactions) {
-				if (tr.getCreditSum() == null) {
-					debit += Integer.valueOf(tr.getDebitSum());
-				}
-			}
-			return debit;
-		}
-		return 0;
-	}
-
-	public int getCreditTotal() {
-		if (this.monthTransactions.size() > 0) {
-			int credit = 0;
-			for (Transaction tr :
-					this.monthTransactions) {
-				if (tr.getDebitSum() == null) {
-					credit += Integer.valueOf(tr.getCreditSum());
-				}
-			}
-			return credit;
-		}
-		return 0;
 	}
 
 }

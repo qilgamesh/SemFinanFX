@@ -1,13 +1,11 @@
 package ru.qilnet.semfinanfx;
 
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.stage.FileChooser;
-import ru.qilnet.semfinanfx.model.Transaction;
+import ru.qilnet.semfinanfx.model.TransactionsData;
 
 import java.io.File;
-import java.time.LocalDate;
 
 /**
  * The controller for the root layout. The root layout provides the basic
@@ -36,7 +34,7 @@ public class RootLayoutController {
 	 */
 	@FXML
 	private void handleNew() {
-		mainApp.setTransactionData(LocalDate.now(), FXCollections.observableArrayList(new Transaction()));
+		mainApp.setTransactionsData(new TransactionsData());
 		mainApp.setTransactionFilePath(null);
 	}
 
@@ -67,7 +65,6 @@ public class RootLayoutController {
 	@FXML
 	private void handleSave() {
 		File sfdbFile = mainApp.getTransactionFilePath();
-
 		if (sfdbFile != null) {
 			mainApp.saveTransactionData(sfdbFile);
 		} else {

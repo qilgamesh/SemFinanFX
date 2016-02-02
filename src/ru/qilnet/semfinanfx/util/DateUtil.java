@@ -4,7 +4,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 /**
  * Helper functions for handling dates.
@@ -30,12 +29,6 @@ public class DateUtil {
 			"Ноябрь",
 			"Декабрь"
 	);
-
-	/**
-	 * The date formatter (use full date).
-	 */
-	private static final DateTimeFormatter DATE_FORMATTER =
-			DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
 	/**
 	 * Returns the list of months

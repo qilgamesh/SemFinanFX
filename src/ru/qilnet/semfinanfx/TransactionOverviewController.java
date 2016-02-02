@@ -1,5 +1,6 @@
 package ru.qilnet.semfinanfx;
 
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import ru.qilnet.semfinanfx.model.Transaction;
@@ -18,15 +19,17 @@ public class TransactionOverviewController {
 	@FXML
 	private TableView<Transaction> transactionTable;
 	@FXML
-	private TableView<Transaction> debitTable;
+	private TableView<Transaction> scheduledCreditTable;
 	@FXML
-	private TableView<Transaction> scheduledTable;
+	private TableView<Transaction> scheduledDebitTable;
 	@FXML
 	private TableColumn<Transaction, String> dayColumn;
 	@FXML
 	private TableColumn<Transaction, String> scheduledDayColumn;
 	@FXML
 	private TableColumn<Transaction, String> descriptionColumn;
+	@FXML
+	private TableColumn<Transaction, String> scheduledDescriptionColumn;
 	@FXML
 	private TableColumn<Transaction, String> creditColumn;
 	@FXML
@@ -42,7 +45,8 @@ public class TransactionOverviewController {
 	@FXML
 	private Label balanceLabel;
 
-	private LocalDate date;
+	private LocalDate currentDate;
+	private TableView<Transaction> selectedTable;
 
 	// Reference to the main application.
 	private MainApp mainApp;
@@ -52,8 +56,8 @@ public class TransactionOverviewController {
 	 * The constructor is called before the initialize() method.
 	 */
 	public TransactionOverviewController() {
-		System.out.println("TransactionOverviewController constructor");
-		date = LocalDate.now().withDayOfMonth(1);
+		System.out.println("set work date to now()");
+		currentDate = LocalDate.now();
 	}
 
 	/**
@@ -62,35 +66,43 @@ public class TransactionOverviewController {
 	 */
 	@FXML
 	private void initialize() {
-		System.out.println("TransactionOverviewController initialize");
 
-		// Initialize the transaction table with the two columns.
+		// transaction table
 		dayColumn.setCellValueFactory(cellData -> cellData.getValue().dayOfMonthProperty());
-		//dayColumn.setStyle("-fx-alignment: CENTER;");
 		descriptionColumn.setCellValueFactory(cellData -> cellData.getValue().descriptionProperty());
-
 		creditColumn.setCellValueFactory(cellData -> cellData.getValue().creditSumProperty());
-		//creditColumn.setStyle("-fx-alignment: CENTER; -fx-text-fill: blue;");
-
 		debitColumn.setCellValueFactory(cellData -> cellData.getValue().debitSumProperty());
-		//debitColumn.setStyle("-fx-alignment: CENTER; -fx-text-fill: red;");
+
+		// scheduled table
+		scheduledDayColumn.setCellValueFactory(cellData -> cellData.getValue().dayOfMonthProperty());
+		scheduledDescriptionColumn.setCellValueFactory(cellData -> cellData.getValue().descriptionProperty());
+		scheduledCreditSumColumn.setCellValueFactory(cellData -> cellData.getValue().creditSumProperty());
 
 		showTransactionDetails(null);
-		transactionTable.getSelectionModel().selectedItemProperty().addListener(
-				(observable, oldValue, newValue) -> showTransactionDetails(newValue));
 
-		yearLabel.setText(String.valueOf(date.getYear()));
-
-		monthChoice.setItems(DateUtil.getListOfMonths());
-		monthChoice.setValue(DateUtil.getMonthName(date));
-
-		monthChoice.getSelectionModel().selectedIndexProperty().addListener((ov, value, new_value) -> {
-			date = date.withYear(Integer.valueOf(yearLabel.getText())).withMonth(new_value.intValue() + 1);
-			transactionTable.setItems(mainApp.getTransactions(date, false));
-			updateTotals();
-			System.out.println("updateTotals in method monthChoice");
+		// listener for selection on table
+		transactionTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+			selectedTable = transactionTable;
+			showTransactionDetails(newValue);
 		});
 
+		scheduledCreditTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+			selectedTable = scheduledCreditTable;
+			showTransactionDetails(newValue);
+		});
+
+		yearLabel.setText(String.valueOf(LocalDate.now().getYear()));
+
+		monthChoice.setItems(DateUtil.getListOfMonths());
+		monthChoice.setValue(DateUtil.getMonthName(LocalDate.now()));
+
+		monthChoice.getSelectionModel().selectedIndexProperty().addListener((ov, value, new_value) -> {
+			currentDate = currentDate.withYear(Integer.valueOf(yearLabel.getText())).withMonth(new_value.intValue() + 1);
+			mainApp.getTransactionsData().changeCurrentDate(currentDate);
+			transactionTable.setItems(mainApp.getTransactionsData().getCompleteTransactions());
+			scheduledCreditTable.setItems(mainApp.getTransactionsData().getScheduledTransactions());
+			updateTotals();
+		});
 
 	}
 
@@ -102,7 +114,8 @@ public class TransactionOverviewController {
 	public void setMainApp(MainApp mainApp) {
 		this.mainApp = mainApp;
 		// Add observable list data to the table
-		transactionTable.setItems(mainApp.getTransactions(date));
+		transactionTable.setItems(mainApp.getTransactionsData().getCompleteTransactions());
+		scheduledCreditTable.setItems(mainApp.getTransactionsData().getScheduledTransactions());
 		updateTotals();
 	}
 
@@ -136,14 +149,17 @@ public class TransactionOverviewController {
 	private void handleNewTransaction() {
 		Transaction tempTransaction = new Transaction();
 		boolean okClicked;
-		if (date.isEqual(LocalDate.now().withDayOfMonth(1))) {
+		if (currentDate.isEqual(LocalDate.now().withDayOfMonth(1))) {
 			okClicked = mainApp.showTransactionEditDialog(LocalDate.now(), tempTransaction);
 		} else {
-			okClicked = mainApp.showTransactionEditDialog(date, tempTransaction);
+			okClicked = mainApp.showTransactionEditDialog(currentDate, tempTransaction);
 		}
 		if (okClicked) {
-			mainApp.getTransactions(date).add(tempTransaction);
-			System.out.println("updateTotals in method handleNewTransaction");
+			if (tempTransaction.getScheduled()) {
+				mainApp.getTransactionsData().getScheduledTransactions().add(tempTransaction);
+			} else {
+				mainApp.getTransactionsData().getCompleteTransactions().add(tempTransaction);
+			}
 			updateTotals();
 		}
 	}
@@ -154,12 +170,12 @@ public class TransactionOverviewController {
 	 */
 	@FXML
 	private void handleEditTransaction() {
-		Transaction selectedTransaction = transactionTable.getSelectionModel().getSelectedItem();
+		Transaction selectedTransaction = selectedTable.getSelectionModel().getSelectedItem();
 		if (selectedTransaction != null) {
-			boolean okClicked = mainApp.showTransactionEditDialog(date.withDayOfMonth(Integer.valueOf(selectedTransaction.getDayOfMonth())), selectedTransaction);
+			boolean okClicked = mainApp.showTransactionEditDialog(currentDate.withDayOfMonth(Integer.valueOf(
+							selectedTransaction.getDayOfMonth())), selectedTransaction);
 			if (okClicked) {
 				showTransactionDetails(selectedTransaction);
-				System.out.println("updateTotals in method handleEditTransaction");
 				updateTotals();
 			}
 		} else {
@@ -178,11 +194,10 @@ public class TransactionOverviewController {
 	 */
 	@FXML
 	private void handleDeleteTransaction() {
-		int selectedIndex = transactionTable.getSelectionModel().getSelectedIndex();
+		int selectedIndex = selectedTable.getSelectionModel().getSelectedIndex();
 		if (selectedIndex >= 0) {
-			transactionTable.getItems().remove(selectedIndex);
+			selectedTable.getItems().remove(selectedIndex);
 			updateTotals();
-			System.out.println("updateTotals in method handleDeleteTransaction");
 		} else {
 			// Nothing selected.
 			Alert alert = new Alert(Alert.AlertType.WARNING);
@@ -199,11 +214,11 @@ public class TransactionOverviewController {
 	 */
 	@FXML
 	private void handlePrevMonth() {
-		if (date.getMonthValue() == 1) {
+		if (currentDate.getMonthValue() == 1) {
 			yearLabel.setText(String.valueOf(Integer.valueOf(yearLabel.getText()) - 1));
 			monthChoice.setValue(DateUtil.getMonthName(12));
 		} else {
-			monthChoice.setValue(DateUtil.getMonthName(date.getMonthValue() - 1));
+			monthChoice.setValue(DateUtil.getMonthName(currentDate.getMonthValue() - 1));
 		}
 	}
 
@@ -212,27 +227,38 @@ public class TransactionOverviewController {
 	 */
 	@FXML
 	private void handleNextMonth() {
-		if (date.getMonthValue() == 12) {
+		if (currentDate.getMonthValue() == 12) {
 			yearLabel.setText(String.valueOf(Integer.valueOf(yearLabel.getText()) + 1));
 			monthChoice.setValue(DateUtil.getMonthName(1));
 		} else {
-			monthChoice.setValue(DateUtil.getMonthName(date.getMonthValue() + 1));
+			monthChoice.setValue(DateUtil.getMonthName(currentDate.getMonthValue() + 1));
 		}
 	}
 
 	private void updateTotals() {
-		int c = mainApp.getAllTransactions().getMonthTransactions(date).getCreditTotal();
-		int d = mainApp.getAllTransactions().getMonthTransactions(date).getDebitTotal();
-		creditTotalLabel.setText(String.valueOf(c));
-		debitTotalLabel.setText(String.valueOf(d));
-		if ((c - d) > 0) {
-			balanceLabel.setText("Остаток: " + String.valueOf(c - d) + "руб.");
+		ObservableList<Transaction> tt = mainApp.getTransactionsData().getCompleteTransactions();
+		int debit = 0;
+		int credit = 0;
+		if (tt.size() > 0) {
+			for (Transaction tr : tt) {
+				if (tr.getCreditSum() == null) {
+					debit += Integer.valueOf(tr.getDebitSum());
+				} else {
+					credit += Integer.valueOf(tr.getCreditSum());
+				}
+			}
+		}
+		int bal = credit - debit;
+		creditTotalLabel.setText(String.valueOf(credit));
+		debitTotalLabel.setText(String.valueOf(debit));
+		if ((bal) > 0) {
+			balanceLabel.setText("Остаток: " + bal + "руб.");
 			balanceLabel.setStyle("-fx-text-fill: black;");
-		} else if ((c - d) < 0) {
+		} else if ((bal) < 0) {
 			balanceLabel.setStyle("-fx-text-fill: red;");
-			balanceLabel.setText("Как так? " + (c - d) + "руб.");
+			balanceLabel.setText("Как так? " + bal + "руб.");
 		} else {
-			balanceLabel.setText("Тии...");
+			balanceLabel.setText("Ти...");
 		}
 	}
 

@@ -1,7 +1,6 @@
 package ru.qilnet.semfinanfx;
 
 import javafx.application.Application;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -12,6 +11,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import ru.qilnet.semfinanfx.model.Transaction;
 import ru.qilnet.semfinanfx.model.TransactionsData;
+import ru.qilnet.semfinanfx.model.TransactionsDataWrapper;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
@@ -29,51 +29,21 @@ public class MainApp extends Application {
 	/**
 	 * The observable list of all Transactions.
 	 */
-	private TransactionsData allTransactions;
-
-	//private ObservableList<Transaction> scheduledTransactions = FXCollections.observableArrayList();
+	private TransactionsData transactionsData;
 
 	/**
 	 * Constructor
 	 */
 	public MainApp() {
-		System.out.println("method MainApp");
-		allTransactions = new TransactionsData();
+		transactionsData = new TransactionsData();
 	}
 
-	/**
-	 * Returns the data as an observable list of Transactions for given month.
-	 *
-	 * @param date of needed transaction list
-	 * @return list of not scheduled transaction
-	 */
-	public ObservableList<Transaction> getTransactions(LocalDate date) {
-		return getTransactions(date, false);
+	public TransactionsData getTransactionsData(){
+		return transactionsData;
 	}
 
-	/**
-	 * Returns the data as an observable list of Transactions for given month.
-	 *
-	 * @param date of needed transaction list
-	 * @param scheduled
-	 * @return list of not scheduled transaction
-	 */
-	public ObservableList<Transaction> getTransactions(LocalDate date, boolean scheduled) {
-		return allTransactions.getMonthTransactions(date).getTransactionsList();
-	}
-
-	public TransactionsData getAllTransactions() {
-		return allTransactions;
-	}
-
-	/**
-	public void setAllTransactionData() {
-		allTransactions = new TransactionsData();
-	}
-	*/
-
-	public void setTransactionData(LocalDate date, ObservableList<Transaction> transactions) {
-		allTransactions.getMonthTransactions(date).setMonthTransactions(transactions);
+	public void setTransactionsData(TransactionsData transactionsData) {
+		this.transactionsData = transactionsData;
 	}
 
 	@Override
@@ -109,7 +79,7 @@ public class MainApp extends Application {
 			e.printStackTrace();
 		}
 
-		// Try to load last opened person file.
+		// Try to load last opened transaction file.
 		File file = getTransactionFilePath();
 		if (file != null) {
 			loadTransactionData(file);
@@ -123,7 +93,7 @@ public class MainApp extends Application {
 		try {
 			// Load transaction overview.
 			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(MainApp.class.getResource("view/RootOverview2.fxml"));
+			loader.setLocation(MainApp.class.getResource("view/TransactionOverview.fxml"));
 			Pane transactionsOverview = loader.load();
 
 			// Set transaction overview into the center of root layout.
@@ -226,11 +196,13 @@ public class MainApp extends Application {
 	public void loadTransactionData(File file) {
 		System.out.println("method loadTransactionData");
 		try {
-			JAXBContext context = JAXBContext.newInstance(TransactionsData.class);
+			JAXBContext context = JAXBContext.newInstance(TransactionsDataWrapper.class);
 			Unmarshaller um = context.createUnmarshaller();
-
 			// Reading XML from the file and unmarshalling.
-			allTransactions = (TransactionsData) um.unmarshal(file);
+			TransactionsDataWrapper wrapper = (TransactionsDataWrapper) um.unmarshal(file);
+
+			transactionsData = new TransactionsData(wrapper.getTransactionsData());
+
 			// Save the file path to the registry.
 			setTransactionFilePath(file);
 		} catch (Exception e) { // catches ANY exception
@@ -249,11 +221,16 @@ public class MainApp extends Application {
 	 */
 	public void saveTransactionData(File file) {
 		try {
-			JAXBContext context = JAXBContext.newInstance(TransactionsData.class);
+			JAXBContext context = JAXBContext.newInstance(TransactionsDataWrapper.class);
 			Marshaller m = context.createMarshaller();
 			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+			// Wrapping our transactions data
+			TransactionsDataWrapper wrapper = new TransactionsDataWrapper();
+			wrapper.setTransactionsData(transactionsData.getTransactionsData());
+
 			// Marshalling and saving XML to the file.
-			m.marshal(allTransactions, file);
+			m.marshal(wrapper, file);
 			// Save the file path to the registry.
 			setTransactionFilePath(file);
 		} catch (Exception e) { // catches ANY exception

@@ -1,38 +1,65 @@
 package ru.qilnet.semfinanfx.model;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Model class for all Transactions
- *
  * @author Andrey Semenyuk
  */
-@XmlRootElement(name = "TransactionsData")
 public class TransactionsData {
 
 	private List<MonthTransactions> transactionsData;
 
-	@XmlElement(name = "Transactions")
-	public List<MonthTransactions> getTransactionsData() {
+	private LocalDate currentDate;
+	private ObservableList<Transaction> completeTransactions = FXCollections.observableArrayList();
+	private ObservableList<Transaction> scheduledTransactions = FXCollections.observableArrayList();
+
+	/**
+	 * Default constructor
+	 */
+	public TransactionsData() {
+		this(null);
+	}
+
+	/**
+	 * Constructor with given Transaction data
+	 *
+	 * @param transactionsData list of transaction data
+	 */
+	public TransactionsData(List<MonthTransactions> transactionsData) {
 		if (transactionsData == null) {
-			transactionsData = new ArrayList<>();
-			transactionsData.add(new MonthTransactions());
+			this.transactionsData = new ArrayList<>();
+			this.transactionsData.add(new MonthTransactions());
+		} else {
+			this.transactionsData = transactionsData;
 		}
+		currentDate = LocalDate.now().withDayOfMonth(1);
+		updateCurrentTransactions();
+	}
+
+	public List<MonthTransactions> getTransactionsData() {
+		writeChanges();
 		return transactionsData;
 	}
 
-	public void setTransactionsData(List<MonthTransactions> lmt) {
-		this.transactionsData = lmt;
+	public ObservableList<Transaction> getCompleteTransactions() {
+		return completeTransactions;
 	}
 
-	public void setMonthTransactions(LocalDate date, ObservableList<Transaction> mt) {
-		getMonthTransactions(date).setMonthTransactions(mt);
+	public ObservableList<Transaction> getScheduledTransactions() {
+		return scheduledTransactions;
+	}
+
+	public void changeCurrentDate(LocalDate newDate) {
+		if (!currentDate.isEqual(newDate.withDayOfMonth(1))) {
+			writeChanges();
+			currentDate = newDate;
+			updateCurrentTransactions();
+		}
 	}
 
 	/**
@@ -47,10 +74,31 @@ public class TransactionsData {
 				if (mt.getMonthDate().equals(date.withDayOfMonth(1)))
 					return mt;
 			}
-			transactionsData.add(new MonthTransactions(date));
-			return getMonthTransactions(date);
+
 		}
-		return getTransactionsData().get(0);
+		return new MonthTransactions(date);
+	}
+
+	private void updateCurrentTransactions() {
+		if (scheduledTransactions.size() > 0)
+			scheduledTransactions.clear();
+		if (completeTransactions.size() > 0)
+			completeTransactions.clear();
+		scheduledTransactions = getMonthTransactions(currentDate).getTransactionsList(true);
+		completeTransactions = getMonthTransactions(currentDate).getTransactionsList(false);
+	}
+
+	private void writeChanges() {
+		ObservableList<Transaction> tt = FXCollections.observableArrayList();
+		if (scheduledTransactions.size() > 0) {
+			tt.addAll(scheduledTransactions);
+		}
+		if (completeTransactions.size() > 0) {
+			tt.addAll(completeTransactions);
+		}
+		if (tt.size() > 0) {
+			getMonthTransactions(currentDate).setMonthTransactions(tt);
+		}
 	}
 
 }
