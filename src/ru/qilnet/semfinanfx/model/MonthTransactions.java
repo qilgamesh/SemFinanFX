@@ -47,17 +47,8 @@ public class MonthTransactions {
 	}
 
 	@XmlElement(name = "Transaction")
-	public ObservableList<Transaction> getTransactionsList() {
+	public ObservableList<Transaction> getMonthTransactions() {
 		return monthTransactions;
-	}
-
-	public ObservableList<Transaction> getTransactionsList(boolean scheduled) {
-		if (monthTransactions != null) {
-			ObservableList<Transaction> tempList = FXCollections.observableArrayList();
-			tempList.addAll(monthTransactions.stream().filter(tr -> tr.getScheduled() == scheduled).collect(Collectors.toList()));
-			return tempList;
-		}
-		return FXCollections.observableArrayList();
 	}
 
 	public void setMonthTransactions(ObservableList<Transaction> transactions) {
@@ -65,6 +56,15 @@ public class MonthTransactions {
 			monthTransactions.clear();
 		}
 		monthTransactions = transactions;
+	}
+
+	public ObservableList<Transaction> getMonthTransactions(boolean scheduled) {
+		if (monthTransactions != null) {
+			ObservableList<Transaction> tempList = FXCollections.observableArrayList();
+			tempList.addAll(monthTransactions.stream().filter(tr -> tr.getScheduled() == scheduled).collect(Collectors.toList()));
+			return tempList;
+		}
+		return FXCollections.observableArrayList();
 	}
 
 	@XmlJavaTypeAdapter(LocalDateAdapter.class)

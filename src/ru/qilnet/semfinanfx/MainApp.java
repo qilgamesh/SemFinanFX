@@ -35,7 +35,7 @@ public class MainApp extends Application {
 	 * Constructor
 	 */
 	public MainApp() {
-		transactionsData = new TransactionsData();
+
 	}
 
 	public TransactionsData getTransactionsData(){
@@ -201,7 +201,8 @@ public class MainApp extends Application {
 			// Reading XML from the file and unmarshalling.
 			TransactionsDataWrapper wrapper = (TransactionsDataWrapper) um.unmarshal(file);
 
-			transactionsData = new TransactionsData(wrapper.getTransactionsData());
+			transactionsData = new TransactionsData();
+			transactionsData.setTransactionsData(wrapper.getTransactionsData());
 
 			// Save the file path to the registry.
 			setTransactionFilePath(file);
@@ -211,6 +212,7 @@ public class MainApp extends Application {
 			alert.setHeaderText("Не удалось загрузить данные из файла:\n" + file.getPath());
 			alert.setContentText("Будет создана новая база данных");
 			alert.showAndWait();
+			transactionsData = new TransactionsData();
 		}
 	}
 

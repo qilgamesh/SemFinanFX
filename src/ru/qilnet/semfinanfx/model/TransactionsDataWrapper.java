@@ -2,7 +2,6 @@ package ru.qilnet.semfinanfx.model;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,10 +16,6 @@ public class TransactionsDataWrapper {
 
 	@XmlElement(name = "Transactions")
 	public List<MonthTransactions> getTransactionsData() {
-		if (transactionsData == null) {
-			transactionsData = new ArrayList<>();
-			transactionsData.add(new MonthTransactions());
-		}
 		return transactionsData;
 	}
 

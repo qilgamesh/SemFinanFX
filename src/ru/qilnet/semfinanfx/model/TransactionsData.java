@@ -14,36 +14,33 @@ public class TransactionsData {
 
 	private List<MonthTransactions> transactionsData;
 
-	private LocalDate currentDate;
 	private ObservableList<Transaction> completeTransactions = FXCollections.observableArrayList();
 	private ObservableList<Transaction> scheduledTransactions = FXCollections.observableArrayList();
+	private MonthTransactions currentTransactions;
 
 	/**
 	 * Default constructor
 	 */
 	public TransactionsData() {
-		this(null);
-	}
-
-	/**
-	 * Constructor with given Transaction data
-	 *
-	 * @param transactionsData list of transaction data
-	 */
-	public TransactionsData(List<MonthTransactions> transactionsData) {
-		if (transactionsData == null) {
-			this.transactionsData = new ArrayList<>();
-			this.transactionsData.add(new MonthTransactions());
-		} else {
-			this.transactionsData = transactionsData;
-		}
-		currentDate = LocalDate.now().withDayOfMonth(1);
-		updateCurrentTransactions();
+		transactionsData = new ArrayList<>();
+		currentTransactions = new MonthTransactions();
+		transactionsData.add(currentTransactions);
+		updateCurrentTransactions(LocalDate.now().withDayOfMonth(1));
 	}
 
 	public List<MonthTransactions> getTransactionsData() {
 		writeChanges();
 		return transactionsData;
+	}
+
+	public void setTransactionsData(List<MonthTransactions> transactionsData) {
+		if (this.transactionsData == null) {
+			this.transactionsData = new ArrayList<>();
+		}
+		if (transactionsData != null) {
+			this.transactionsData = transactionsData;
+			updateCurrentTransactions(LocalDate.now().withDayOfMonth(1));
+		}
 	}
 
 	public ObservableList<Transaction> getCompleteTransactions() {
@@ -54,50 +51,50 @@ public class TransactionsData {
 		return scheduledTransactions;
 	}
 
-	public void changeCurrentDate(LocalDate newDate) {
-		if (!currentDate.isEqual(newDate.withDayOfMonth(1))) {
-			writeChanges();
-			currentDate = newDate;
-			updateCurrentTransactions();
-		}
-	}
-
-	/**
-	 * Returns the data as an MonthTransactions object for given month.
-	 *
-	 * @param date given first day of month
-	 * @return object of MonthTransactions
-	 */
-	public MonthTransactions getMonthTransactions(LocalDate date) {
-		if (transactionsData != null) {
-			for (MonthTransactions mt : transactionsData) {
-				if (mt.getMonthDate().equals(date.withDayOfMonth(1)))
-					return mt;
-			}
-
-		}
-		return new MonthTransactions(date);
-	}
-
-	private void updateCurrentTransactions() {
+	public void updateCurrentTransactions(LocalDate date) {
 		if (scheduledTransactions.size() > 0)
 			scheduledTransactions.clear();
 		if (completeTransactions.size() > 0)
 			completeTransactions.clear();
-		scheduledTransactions = getMonthTransactions(currentDate).getTransactionsList(true);
-		completeTransactions = getMonthTransactions(currentDate).getTransactionsList(false);
+		if (currentTransactions.getMonthTransactions().size() != 0) {
+			currentTransactions.getMonthTransactions().clear();
+		}
+		for (MonthTransactions mt : transactionsData) {
+			if (mt.getMonthDate().equals(date.withDayOfMonth(1))) {
+				currentTransactions = mt;
+				break;
+			}
+		}
+		if (currentTransactions.getMonthTransactions().size() == 0) {
+			currentTransactions = new MonthTransactions(date);
+			transactionsData.add(currentTransactions);
+		}
+
+		if (currentTransactions.getMonthTransactions().size() > 0) {
+			scheduledTransactions = currentTransactions.getMonthTransactions(true);
+			completeTransactions = currentTransactions.getMonthTransactions(false);
+		}
+
 	}
 
 	private void writeChanges() {
-		ObservableList<Transaction> tt = FXCollections.observableArrayList();
+		boolean needSave = false;
+		currentTransactions.getMonthTransactions().clear();
 		if (scheduledTransactions.size() > 0) {
-			tt.addAll(scheduledTransactions);
+			currentTransactions.getMonthTransactions().addAll(scheduledTransactions);
+			needSave = true;
 		}
 		if (completeTransactions.size() > 0) {
-			tt.addAll(completeTransactions);
+			currentTransactions.getMonthTransactions().addAll(completeTransactions);
+			needSave = true;
 		}
-		if (tt.size() > 0) {
-			getMonthTransactions(currentDate).setMonthTransactions(tt);
+		if (needSave) {
+			for (int i = 1; i < transactionsData.size(); i++) {
+				if (transactionsData.get(i).getMonthDate().isEqual(currentTransactions.getMonthDate())) {
+					transactionsData.set(i, currentTransactions);
+					break;
+				}
+			}
 		}
 	}
 

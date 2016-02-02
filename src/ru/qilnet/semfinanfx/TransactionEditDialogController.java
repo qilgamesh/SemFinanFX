@@ -63,6 +63,7 @@ public class TransactionEditDialogController {
 			sumField.setText(transaction.getCreditSum());
 		}
 		dayPicker.setValue(date);
+		scheduledCheckBox.setSelected(transaction.getScheduled());
 	}
 
 	/**

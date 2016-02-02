@@ -56,7 +56,6 @@ public class TransactionOverviewController {
 	 * The constructor is called before the initialize() method.
 	 */
 	public TransactionOverviewController() {
-		System.out.println("set work date to now()");
 		currentDate = LocalDate.now();
 	}
 
@@ -98,7 +97,7 @@ public class TransactionOverviewController {
 
 		monthChoice.getSelectionModel().selectedIndexProperty().addListener((ov, value, new_value) -> {
 			currentDate = currentDate.withYear(Integer.valueOf(yearLabel.getText())).withMonth(new_value.intValue() + 1);
-			mainApp.getTransactionsData().changeCurrentDate(currentDate);
+			mainApp.getTransactionsData().updateCurrentTransactions(currentDate.withDayOfMonth(1));
 			transactionTable.setItems(mainApp.getTransactionsData().getCompleteTransactions());
 			scheduledCreditTable.setItems(mainApp.getTransactionsData().getScheduledTransactions());
 			updateTotals();
@@ -148,7 +147,10 @@ public class TransactionOverviewController {
 	@FXML
 	private void handleNewTransaction() {
 		Transaction tempTransaction = new Transaction();
-		boolean okClicked;
+		if (currentDate.getMonthValue() > LocalDate.now().getMonthValue()) {
+			tempTransaction.setScheduled(true);
+		}
+		boolean okClicked = false;
 		if (currentDate.isEqual(LocalDate.now().withDayOfMonth(1))) {
 			okClicked = mainApp.showTransactionEditDialog(LocalDate.now(), tempTransaction);
 		} else {
@@ -214,6 +216,7 @@ public class TransactionOverviewController {
 	 */
 	@FXML
 	private void handlePrevMonth() {
+		System.out.println("<<<<<<<<");
 		if (currentDate.getMonthValue() == 1) {
 			yearLabel.setText(String.valueOf(Integer.valueOf(yearLabel.getText()) - 1));
 			monthChoice.setValue(DateUtil.getMonthName(12));
@@ -227,6 +230,7 @@ public class TransactionOverviewController {
 	 */
 	@FXML
 	private void handleNextMonth() {
+		System.out.println(">>>>>>>>");
 		if (currentDate.getMonthValue() == 12) {
 			yearLabel.setText(String.valueOf(Integer.valueOf(yearLabel.getText()) + 1));
 			monthChoice.setValue(DateUtil.getMonthName(1));
