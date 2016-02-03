@@ -14,18 +14,18 @@ public class TransactionsData {
 
 	private List<MonthTransactions> transactionsData;
 
-	private ObservableList<Transaction> completeTransactions = FXCollections.observableArrayList();
-	private ObservableList<Transaction> scheduledTransactions = FXCollections.observableArrayList();
-	private MonthTransactions currentTransactions;
+	private ObservableList<Transaction> doneTransactions = FXCollections.observableArrayList();
+	private ObservableList<Transaction> schedTransactions = FXCollections.observableArrayList();
+	private MonthTransactions curTransactions;
 
 	/**
 	 * Default constructor
 	 */
 	public TransactionsData() {
 		transactionsData = new ArrayList<>();
-		currentTransactions = new MonthTransactions();
-		transactionsData.add(currentTransactions);
-		updateCurrentTransactions(LocalDate.now().withDayOfMonth(1));
+		curTransactions = new MonthTransactions();
+		transactionsData.add(curTransactions);
+		updateTransactions(LocalDate.now().withDayOfMonth(1));
 	}
 
 	public List<MonthTransactions> getTransactionsData() {
@@ -39,63 +39,60 @@ public class TransactionsData {
 		}
 		if (transactionsData != null) {
 			this.transactionsData = transactionsData;
-			updateCurrentTransactions(LocalDate.now().withDayOfMonth(1));
+			updateTransactions(LocalDate.now().withDayOfMonth(1));
 		}
 	}
 
-	public ObservableList<Transaction> getCompleteTransactions() {
-		return completeTransactions;
+	public ObservableList<Transaction> getDoneTransactions() {
+		return doneTransactions;
 	}
 
-	public ObservableList<Transaction> getScheduledTransactions() {
-		return scheduledTransactions;
+	public ObservableList<Transaction> getSchedTransactions() {
+		return schedTransactions;
 	}
 
-	public void updateCurrentTransactions(LocalDate date) {
-		if (scheduledTransactions.size() > 0)
-			scheduledTransactions.clear();
-		if (completeTransactions.size() > 0)
-			completeTransactions.clear();
-		if (currentTransactions.getMonthTransactions().size() != 0) {
-			currentTransactions.getMonthTransactions().clear();
+	public void updateTransactions(LocalDate date) {
+		if (curTransactions.getMonthValue() != date.getMonthValue()) {
+			writeChanges();
+			if (schedTransactions.size() > 0)
+				schedTransactions.clear();
+			if (doneTransactions.size() > 0)
+				doneTransactions.clear();
+			curTransactions = new MonthTransactions(date);
 		}
+
 		for (MonthTransactions mt : transactionsData) {
-			if (mt.getMonthDate().equals(date.withDayOfMonth(1))) {
-				currentTransactions = mt;
+			if (mt.getMonthValue() == date.getMonthValue()) {
+				curTransactions = mt;
 				break;
 			}
 		}
-		if (currentTransactions.getMonthTransactions().size() == 0) {
-			currentTransactions = new MonthTransactions(date);
-			transactionsData.add(currentTransactions);
-		}
 
-		if (currentTransactions.getMonthTransactions().size() > 0) {
-			scheduledTransactions = currentTransactions.getMonthTransactions(true);
-			completeTransactions = currentTransactions.getMonthTransactions(false);
+		if (curTransactions.size() > 0) {
+			schedTransactions = curTransactions.getMonthTransactions(true);
+			doneTransactions = curTransactions.getMonthTransactions(false);
+			System.out.println("");
 		}
-
 	}
 
 	private void writeChanges() {
-		boolean needSave = false;
-		currentTransactions.getMonthTransactions().clear();
-		if (scheduledTransactions.size() > 0) {
-			currentTransactions.getMonthTransactions().addAll(scheduledTransactions);
-			needSave = true;
-		}
-		if (completeTransactions.size() > 0) {
-			currentTransactions.getMonthTransactions().addAll(completeTransactions);
-			needSave = true;
-		}
-		if (needSave) {
-			for (int i = 1; i < transactionsData.size(); i++) {
-				if (transactionsData.get(i).getMonthDate().isEqual(currentTransactions.getMonthDate())) {
-					transactionsData.set(i, currentTransactions);
+		MonthTransactions tmpMT = new MonthTransactions(curTransactions.getMonthDate());
+		tmpMT.getMonthTransactions().addAll(schedTransactions);
+		tmpMT.getMonthTransactions().addAll(doneTransactions);
+		if ((tmpMT.size() != curTransactions.size()) && (tmpMT.size() > 0)) {
+			boolean good = false;
+			for (int i = 0; i < transactionsData.size(); i++) {
+				if (transactionsData.get(i).getMonthValue() == tmpMT.getMonthValue()) {
+					transactionsData.set(i, tmpMT);
+					good = true;
 					break;
 				}
 			}
+			if (!good) {
+				transactionsData.add(tmpMT);
+			}
 		}
+
 	}
 
 }

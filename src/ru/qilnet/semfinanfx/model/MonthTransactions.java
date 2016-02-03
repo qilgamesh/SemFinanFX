@@ -77,4 +77,12 @@ public class MonthTransactions {
 		monthDate = date.withDayOfMonth(1);
 	}
 
+	public int getMonthValue(){
+		return monthDate.getMonthValue();
+	}
+
+	public int size() {
+		return monthTransactions.size();
+	}
+
 }

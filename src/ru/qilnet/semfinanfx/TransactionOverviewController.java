@@ -97,9 +97,9 @@ public class TransactionOverviewController {
 
 		monthChoice.getSelectionModel().selectedIndexProperty().addListener((ov, value, new_value) -> {
 			currentDate = currentDate.withYear(Integer.valueOf(yearLabel.getText())).withMonth(new_value.intValue() + 1);
-			mainApp.getTransactionsData().updateCurrentTransactions(currentDate.withDayOfMonth(1));
-			transactionTable.setItems(mainApp.getTransactionsData().getCompleteTransactions());
-			scheduledCreditTable.setItems(mainApp.getTransactionsData().getScheduledTransactions());
+			mainApp.getTransactionsData().updateTransactions(currentDate.withDayOfMonth(1));
+			transactionTable.setItems(mainApp.getTransactionsData().getDoneTransactions());
+			scheduledCreditTable.setItems(mainApp.getTransactionsData().getSchedTransactions());
 			updateTotals();
 		});
 
@@ -113,8 +113,8 @@ public class TransactionOverviewController {
 	public void setMainApp(MainApp mainApp) {
 		this.mainApp = mainApp;
 		// Add observable list data to the table
-		transactionTable.setItems(mainApp.getTransactionsData().getCompleteTransactions());
-		scheduledCreditTable.setItems(mainApp.getTransactionsData().getScheduledTransactions());
+		transactionTable.setItems(mainApp.getTransactionsData().getDoneTransactions());
+		scheduledCreditTable.setItems(mainApp.getTransactionsData().getSchedTransactions());
 		updateTotals();
 	}
 
@@ -158,9 +158,9 @@ public class TransactionOverviewController {
 		}
 		if (okClicked) {
 			if (tempTransaction.getScheduled()) {
-				mainApp.getTransactionsData().getScheduledTransactions().add(tempTransaction);
+				mainApp.getTransactionsData().getSchedTransactions().add(tempTransaction);
 			} else {
-				mainApp.getTransactionsData().getCompleteTransactions().add(tempTransaction);
+				mainApp.getTransactionsData().getDoneTransactions().add(tempTransaction);
 			}
 			updateTotals();
 		}
@@ -240,7 +240,7 @@ public class TransactionOverviewController {
 	}
 
 	private void updateTotals() {
-		ObservableList<Transaction> tt = mainApp.getTransactionsData().getCompleteTransactions();
+		ObservableList<Transaction> tt = mainApp.getTransactionsData().getDoneTransactions();
 		int debit = 0;
 		int credit = 0;
 		if (tt.size() > 0) {
