@@ -71,7 +71,6 @@ public class TransactionsData {
 		if (curTransactions.size() > 0) {
 			schedTransactions = curTransactions.getMonthTransactions(true);
 			doneTransactions = curTransactions.getMonthTransactions(false);
-			System.out.println("");
 		}
 	}
 

@@ -216,7 +216,6 @@ public class TransactionOverviewController {
 	 */
 	@FXML
 	private void handlePrevMonth() {
-		System.out.println("<<<<<<<<");
 		if (currentDate.getMonthValue() == 1) {
 			yearLabel.setText(String.valueOf(Integer.valueOf(yearLabel.getText()) - 1));
 			monthChoice.setValue(DateUtil.getMonthName(12));
@@ -230,7 +229,6 @@ public class TransactionOverviewController {
 	 */
 	@FXML
 	private void handleNextMonth() {
-		System.out.println(">>>>>>>>");
 		if (currentDate.getMonthValue() == 12) {
 			yearLabel.setText(String.valueOf(Integer.valueOf(yearLabel.getText()) + 1));
 			monthChoice.setValue(DateUtil.getMonthName(1));

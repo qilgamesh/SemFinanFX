@@ -25,7 +25,6 @@ public class RootLayoutController {
 	 * @param mainApp
 	 */
 	public void setMainApp(MainApp mainApp) {
-		System.out.println("RootLayoutController setMainApp");
 		this.mainApp = mainApp;
 	}
 

@@ -48,7 +48,6 @@ public class MainApp extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		System.out.println("method start");
 		this.primaryStage = primaryStage;
 		this.primaryStage.setTitle("SemFinanFX");
 		initRootLayout();
@@ -60,7 +59,6 @@ public class MainApp extends Application {
 	 */
 	public void initRootLayout() {
 		try {
-			System.out.println("method initRootLayout");
 			// Load root layout from fxml file.
 			FXMLLoader loader = new FXMLLoader();
 			loader.setLocation(MainApp.class.getResource("view/RootLayout.fxml"));
@@ -194,7 +192,6 @@ public class MainApp extends Application {
 	 * @param file
 	 */
 	public void loadTransactionData(File file) {
-		System.out.println("method loadTransactionData");
 		try {
 			JAXBContext context = JAXBContext.newInstance(TransactionsDataWrapper.class);
 			Unmarshaller um = context.createUnmarshaller();
@@ -245,7 +242,6 @@ public class MainApp extends Application {
 	}
 
 	public static void main(String[] args) {
-		System.out.println("method main");
 		launch(args);
 	}
 }
