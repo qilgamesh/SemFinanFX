@@ -12,6 +12,13 @@ import java.util.List;
  */
 public class TransactionsData {
 
+	/**
+	 * types of transactions
+	 */
+	public enum type {
+		CREDIT, DEBIT
+	};
+
 	private List<MonthTransactions> transactionsData;
 
 	private ObservableList<Transaction> doneTransactions = FXCollections.observableArrayList();
@@ -47,7 +54,39 @@ public class TransactionsData {
 		return doneTransactions;
 	}
 
+	/**
+	 * If no params returns all sheduled transactions
+	 *
+	 * @return
+	 */
 	public ObservableList<Transaction> getSchedTransactions() {
+		return schedTransactions;
+	}
+
+	/**
+	 * Returns list of typed sheduled transactions
+	 * @param t
+	 * @return
+	 */
+	public ObservableList<Transaction> getSchedTransactions(type t) {
+		if (schedTransactions.size() > 0) {
+			ObservableList<Transaction> tmpList = FXCollections.observableArrayList();
+			for (Transaction tr : schedTransactions) {
+				switch (t) {
+					case CREDIT:
+						if (tr.getCreditSum() != null) {
+							tmpList.add(tr);
+						}
+						break;
+					case DEBIT:
+						if (tr.getDebitSum() != null) {
+							tmpList.add(tr);
+						}
+						break;
+				}
+			}
+			return tmpList;
+		}
 		return schedTransactions;
 	}
 

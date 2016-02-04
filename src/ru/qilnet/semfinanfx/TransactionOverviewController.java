@@ -4,6 +4,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import ru.qilnet.semfinanfx.model.Transaction;
+import ru.qilnet.semfinanfx.model.TransactionsData;
 import ru.qilnet.semfinanfx.util.DateUtil;
 
 import java.time.LocalDate;
@@ -12,38 +13,53 @@ import java.time.LocalDate;
  * @author Andrey Semenyuk
  */
 public class TransactionOverviewController {
+
+	// controls for date choice
 	@FXML
 	private ChoiceBox<String> monthChoice;
 	@FXML
 	private Label yearLabel;
+
+	// done transaction table
 	@FXML
 	private TableView<Transaction> transactionTable;
 	@FXML
-	private TableView<Transaction> schedCredTable;
-	@FXML
-	private TableView<Transaction> schedDebTable;
-	@FXML
 	private TableColumn<Transaction, String> dayCol;
-	@FXML
-	private TableColumn<Transaction, String> schedDayCol;
-	@FXML
-	private TableColumn<Transaction, String> descCol;
-	@FXML
-	private TableColumn<Transaction, String> schedDescCol;
 	@FXML
 	private TableColumn<Transaction, String> credCol;
 	@FXML
-	private TableColumn<Transaction, String> schedCredCol;
-	@FXML
-	private TableColumn<Transaction, String> debDescCol;
-	@FXML
 	private TableColumn<Transaction, String> debCol;
+	@FXML
+	private TableColumn<Transaction, String> descCol;
+
+	// show total info
 	@FXML
 	private Label debTotalLabel;
 	@FXML
 	private Label credTotalLabel;
 	@FXML
 	private Label balanceLabel;
+
+	// scheduled credit table
+	@FXML
+	private TableView<Transaction> schedCredTable;
+	@FXML
+	private TableColumn<Transaction, String> schedCredDayCol;
+	@FXML
+	private TableColumn<Transaction, String> schedCredDescCol;
+	@FXML
+	private TableColumn<Transaction, String> schedCredCol;
+
+	// scheduled debit table
+	@FXML
+	private TableView<Transaction> schedDebTable;
+	@FXML
+	private TableColumn<Transaction, String> schedDebDayCol;
+	@FXML
+	private TableColumn<Transaction, String> schedDebCol;
+	@FXML
+	private TableColumn<Transaction, String> schedDebDescCol;
+
 
 	private LocalDate currDate;
 	private TableView<Transaction> selectedTable;
@@ -73,10 +89,15 @@ public class TransactionOverviewController {
 		credCol.setCellValueFactory(cellData -> cellData.getValue().creditSumProperty());
 		debCol.setCellValueFactory(cellData -> cellData.getValue().debitSumProperty());
 
-		// scheduled table
-		schedDayCol.setCellValueFactory(cellData -> cellData.getValue().dayOfMonthProperty());
-		schedDescCol.setCellValueFactory(cellData -> cellData.getValue().descriptionProperty());
+		// scheduled credit table
+		schedCredDayCol.setCellValueFactory(cellData -> cellData.getValue().dayOfMonthProperty());
+		schedCredDescCol.setCellValueFactory(cellData -> cellData.getValue().descriptionProperty());
 		schedCredCol.setCellValueFactory(cellData -> cellData.getValue().creditSumProperty());
+
+		// scheduled debit table
+		schedDebDayCol.setCellValueFactory(cellData -> cellData.getValue().dayOfMonthProperty());
+		schedDebDescCol.setCellValueFactory(cellData -> cellData.getValue().descriptionProperty());
+		schedDebCol.setCellValueFactory(cellData -> cellData.getValue().debitSumProperty());
 
 		showTransactionDetails(null);
 
@@ -91,6 +112,11 @@ public class TransactionOverviewController {
 			showTransactionDetails(newValue);
 		});
 
+		schedDebTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+			selectedTable = schedDebTable;
+			showTransactionDetails(newValue);
+		});
+
 		yearLabel.setText(String.valueOf(LocalDate.now().getYear()));
 
 		monthChoice.setItems(DateUtil.getListOfMonths());
@@ -99,8 +125,7 @@ public class TransactionOverviewController {
 		monthChoice.getSelectionModel().selectedIndexProperty().addListener((ov, value, new_value) -> {
 			currDate = currDate.withYear(Integer.valueOf(yearLabel.getText())).withMonth(new_value.intValue() + 1);
 			mainApp.getTransactionsData().updateTransactions(currDate.withDayOfMonth(1));
-			transactionTable.setItems(mainApp.getTransactionsData().getDoneTransactions());
-			schedCredTable.setItems(mainApp.getTransactionsData().getSchedTransactions());
+			updateTables();
 			updateTotals();
 		});
 
@@ -114,8 +139,7 @@ public class TransactionOverviewController {
 	public void setMainApp(MainApp mainApp) {
 		this.mainApp = mainApp;
 		// Add observable list data to the table
-		transactionTable.setItems(mainApp.getTransactionsData().getDoneTransactions());
-		schedCredTable.setItems(mainApp.getTransactionsData().getSchedTransactions());
+		updateTables();
 		updateTotals();
 	}
 
@@ -162,8 +186,9 @@ public class TransactionOverviewController {
 				mainApp.getTransactionsData().getSchedTransactions().add(tempTransaction);
 			} else {
 				mainApp.getTransactionsData().getDoneTransactions().add(tempTransaction);
+				updateTotals();
 			}
-			updateTotals();
+			updateTables();
 		}
 	}
 
@@ -179,7 +204,10 @@ public class TransactionOverviewController {
 							selectedTransaction.getDayOfMonth())), selectedTransaction);
 			if (okClicked) {
 				showTransactionDetails(selectedTransaction);
-				updateTotals();
+				updateTables();
+				if (selectedTable == transactionTable) {
+					updateTotals();
+				}
 			}
 		} else {
 			// Nothing selected.
@@ -200,7 +228,10 @@ public class TransactionOverviewController {
 		int selectedIndex = selectedTable.getSelectionModel().getSelectedIndex();
 		if (selectedIndex >= 0) {
 			selectedTable.getItems().remove(selectedIndex);
-			updateTotals();
+			if (selectedTable == transactionTable) {
+				updateTotals();
+			}
+
 		} else {
 			// Nothing selected.
 			Alert alert = new Alert(Alert.AlertType.WARNING);
@@ -236,6 +267,12 @@ public class TransactionOverviewController {
 		} else {
 			monthChoice.setValue(DateUtil.getMonthName(currDate.getMonthValue() + 1));
 		}
+	}
+
+	private void updateTables(){
+		transactionTable.setItems(mainApp.getTransactionsData().getDoneTransactions());
+		schedCredTable.setItems(mainApp.getTransactionsData().getSchedTransactions(TransactionsData.type.CREDIT));
+		schedDebTable.setItems(mainApp.getTransactionsData().getSchedTransactions(TransactionsData.type.DEBIT));
 	}
 
 	private void updateTotals() {
