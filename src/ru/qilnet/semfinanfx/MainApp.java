@@ -107,6 +107,28 @@ public class MainApp extends Application {
 	}
 
 	/**
+	 * Shows the transaction overview inside the root layout.
+	 */
+	public void showTransactionTableOverview4() {
+		try {
+			// Load transaction overview.
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(MainApp.class.getResource("view/TransactionOverview4.fxml"));
+			Pane transactionsOverview = loader.load();
+
+			// Set transaction overview into the center of root layout.
+			rootLayout.setCenter(transactionsOverview);
+
+			// Give the controller access to the main app.
+			TransactionOverviewController controller = loader.getController();
+			controller.setMainApp(this);
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
 	 * Returns the main stage.
 	 *
 	 * @return primaryStage

@@ -19,33 +19,33 @@ public class TransactionOverviewController {
 	@FXML
 	private TableView<Transaction> transactionTable;
 	@FXML
-	private TableView<Transaction> scheduledCreditTable;
+	private TableView<Transaction> schedCredTable;
 	@FXML
-	private TableView<Transaction> scheduledDebitTable;
+	private TableView<Transaction> schedDebTable;
 	@FXML
-	private TableColumn<Transaction, String> dayColumn;
+	private TableColumn<Transaction, String> dayCol;
 	@FXML
-	private TableColumn<Transaction, String> scheduledDayColumn;
+	private TableColumn<Transaction, String> schedDayCol;
 	@FXML
-	private TableColumn<Transaction, String> descriptionColumn;
+	private TableColumn<Transaction, String> descCol;
 	@FXML
-	private TableColumn<Transaction, String> scheduledDescriptionColumn;
+	private TableColumn<Transaction, String> schedDescCol;
 	@FXML
-	private TableColumn<Transaction, String> creditColumn;
+	private TableColumn<Transaction, String> credCol;
 	@FXML
-	private TableColumn<Transaction, String> scheduledCreditSumColumn;
+	private TableColumn<Transaction, String> schedCredCol;
 	@FXML
-	private TableColumn<Transaction, String> debitDescriptionColumn;
+	private TableColumn<Transaction, String> debDescCol;
 	@FXML
-	private TableColumn<Transaction, String> debitColumn;
+	private TableColumn<Transaction, String> debCol;
 	@FXML
-	private Label debitTotalLabel;
+	private Label debTotalLabel;
 	@FXML
-	private Label creditTotalLabel;
+	private Label credTotalLabel;
 	@FXML
 	private Label balanceLabel;
 
-	private LocalDate currentDate;
+	private LocalDate currDate;
 	private TableView<Transaction> selectedTable;
 
 	// Reference to the main application.
@@ -56,7 +56,8 @@ public class TransactionOverviewController {
 	 * The constructor is called before the initialize() method.
 	 */
 	public TransactionOverviewController() {
-		currentDate = LocalDate.now();
+		currDate = LocalDate.now();
+		System.out.println(this.getClass().getName());
 	}
 
 	/**
@@ -67,15 +68,15 @@ public class TransactionOverviewController {
 	private void initialize() {
 
 		// transaction table
-		dayColumn.setCellValueFactory(cellData -> cellData.getValue().dayOfMonthProperty());
-		descriptionColumn.setCellValueFactory(cellData -> cellData.getValue().descriptionProperty());
-		creditColumn.setCellValueFactory(cellData -> cellData.getValue().creditSumProperty());
-		debitColumn.setCellValueFactory(cellData -> cellData.getValue().debitSumProperty());
+		dayCol.setCellValueFactory(cellData -> cellData.getValue().dayOfMonthProperty());
+		descCol.setCellValueFactory(cellData -> cellData.getValue().descriptionProperty());
+		credCol.setCellValueFactory(cellData -> cellData.getValue().creditSumProperty());
+		debCol.setCellValueFactory(cellData -> cellData.getValue().debitSumProperty());
 
 		// scheduled table
-		scheduledDayColumn.setCellValueFactory(cellData -> cellData.getValue().dayOfMonthProperty());
-		scheduledDescriptionColumn.setCellValueFactory(cellData -> cellData.getValue().descriptionProperty());
-		scheduledCreditSumColumn.setCellValueFactory(cellData -> cellData.getValue().creditSumProperty());
+		schedDayCol.setCellValueFactory(cellData -> cellData.getValue().dayOfMonthProperty());
+		schedDescCol.setCellValueFactory(cellData -> cellData.getValue().descriptionProperty());
+		schedCredCol.setCellValueFactory(cellData -> cellData.getValue().creditSumProperty());
 
 		showTransactionDetails(null);
 
@@ -85,8 +86,8 @@ public class TransactionOverviewController {
 			showTransactionDetails(newValue);
 		});
 
-		scheduledCreditTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-			selectedTable = scheduledCreditTable;
+		schedCredTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+			selectedTable = schedCredTable;
 			showTransactionDetails(newValue);
 		});
 
@@ -96,10 +97,10 @@ public class TransactionOverviewController {
 		monthChoice.setValue(DateUtil.getMonthName(LocalDate.now()));
 
 		monthChoice.getSelectionModel().selectedIndexProperty().addListener((ov, value, new_value) -> {
-			currentDate = currentDate.withYear(Integer.valueOf(yearLabel.getText())).withMonth(new_value.intValue() + 1);
-			mainApp.getTransactionsData().updateTransactions(currentDate.withDayOfMonth(1));
+			currDate = currDate.withYear(Integer.valueOf(yearLabel.getText())).withMonth(new_value.intValue() + 1);
+			mainApp.getTransactionsData().updateTransactions(currDate.withDayOfMonth(1));
 			transactionTable.setItems(mainApp.getTransactionsData().getDoneTransactions());
-			scheduledCreditTable.setItems(mainApp.getTransactionsData().getSchedTransactions());
+			schedCredTable.setItems(mainApp.getTransactionsData().getSchedTransactions());
 			updateTotals();
 		});
 
@@ -114,7 +115,7 @@ public class TransactionOverviewController {
 		this.mainApp = mainApp;
 		// Add observable list data to the table
 		transactionTable.setItems(mainApp.getTransactionsData().getDoneTransactions());
-		scheduledCreditTable.setItems(mainApp.getTransactionsData().getSchedTransactions());
+		schedCredTable.setItems(mainApp.getTransactionsData().getSchedTransactions());
 		updateTotals();
 	}
 
@@ -147,14 +148,14 @@ public class TransactionOverviewController {
 	@FXML
 	private void handleNewTransaction() {
 		Transaction tempTransaction = new Transaction();
-		if (currentDate.getMonthValue() > LocalDate.now().getMonthValue()) {
+		if (currDate.getMonthValue() > LocalDate.now().getMonthValue()) {
 			tempTransaction.setScheduled(true);
 		}
 		boolean okClicked = false;
-		if (currentDate.isEqual(LocalDate.now().withDayOfMonth(1))) {
+		if (currDate.isEqual(LocalDate.now().withDayOfMonth(1))) {
 			okClicked = mainApp.showTransactionEditDialog(LocalDate.now(), tempTransaction);
 		} else {
-			okClicked = mainApp.showTransactionEditDialog(currentDate, tempTransaction);
+			okClicked = mainApp.showTransactionEditDialog(currDate, tempTransaction);
 		}
 		if (okClicked) {
 			if (tempTransaction.getScheduled()) {
@@ -174,7 +175,7 @@ public class TransactionOverviewController {
 	private void handleEditTransaction() {
 		Transaction selectedTransaction = selectedTable.getSelectionModel().getSelectedItem();
 		if (selectedTransaction != null) {
-			boolean okClicked = mainApp.showTransactionEditDialog(currentDate.withDayOfMonth(Integer.valueOf(
+			boolean okClicked = mainApp.showTransactionEditDialog(currDate.withDayOfMonth(Integer.valueOf(
 							selectedTransaction.getDayOfMonth())), selectedTransaction);
 			if (okClicked) {
 				showTransactionDetails(selectedTransaction);
@@ -216,11 +217,11 @@ public class TransactionOverviewController {
 	 */
 	@FXML
 	private void handlePrevMonth() {
-		if (currentDate.getMonthValue() == 1) {
+		if (currDate.getMonthValue() == 1) {
 			yearLabel.setText(String.valueOf(Integer.valueOf(yearLabel.getText()) - 1));
 			monthChoice.setValue(DateUtil.getMonthName(12));
 		} else {
-			monthChoice.setValue(DateUtil.getMonthName(currentDate.getMonthValue() - 1));
+			monthChoice.setValue(DateUtil.getMonthName(currDate.getMonthValue() - 1));
 		}
 	}
 
@@ -229,11 +230,11 @@ public class TransactionOverviewController {
 	 */
 	@FXML
 	private void handleNextMonth() {
-		if (currentDate.getMonthValue() == 12) {
+		if (currDate.getMonthValue() == 12) {
 			yearLabel.setText(String.valueOf(Integer.valueOf(yearLabel.getText()) + 1));
 			monthChoice.setValue(DateUtil.getMonthName(1));
 		} else {
-			monthChoice.setValue(DateUtil.getMonthName(currentDate.getMonthValue() + 1));
+			monthChoice.setValue(DateUtil.getMonthName(currDate.getMonthValue() + 1));
 		}
 	}
 
@@ -251,8 +252,8 @@ public class TransactionOverviewController {
 			}
 		}
 		int bal = credit - debit;
-		creditTotalLabel.setText(String.valueOf(credit));
-		debitTotalLabel.setText(String.valueOf(debit));
+		credTotalLabel.setText(String.valueOf(credit));
+		debTotalLabel.setText(String.valueOf(debit));
 		if ((bal) > 0) {
 			balanceLabel.setText("Остаток: " + bal + "руб.");
 			balanceLabel.setStyle("-fx-text-fill: black;");
