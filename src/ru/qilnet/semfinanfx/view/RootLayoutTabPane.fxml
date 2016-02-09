@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+
+<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="600.0" prefHeight="600.0" prefWidth="900.0" tabClosingPolicy="UNAVAILABLE" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.40" fx:controller="ru.qilnet.semfinanfx.RootLayoutController">
+    <tabs>
+        <Tab text="Главная" />
+        <Tab text="Долги и кредиты" />
+        <Tab text="Отчёты" />
+        <Tab text="Настройки" />
+        <Tab text="+" />
+    </tabs>
+</TabPane>

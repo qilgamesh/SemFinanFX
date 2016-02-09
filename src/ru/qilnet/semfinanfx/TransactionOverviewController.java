@@ -73,7 +73,6 @@ public class TransactionOverviewController {
 	 */
 	public TransactionOverviewController() {
 		currDate = LocalDate.now();
-		System.out.println(this.getClass().getName());
 	}
 
 	/**

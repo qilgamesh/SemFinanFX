@@ -62,9 +62,9 @@
                <children>
                   <TableView fx:id="schedCredTable" prefHeight="210.0" prefWidth="324.0">
                      <columns>
-                        <TableColumn fx:id="schedCredDayCol" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" text="День" />
+                        <TableColumn styleClass="dayColumn" fx:id="schedCredDayCol" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" text="День" />
                         <TableColumn fx:id="schedCredDescCol" prefWidth="75.0" text="Наименование" />
-                        <TableColumn fx:id="schedCredCol" maxWidth="100.0" minWidth="100.0" prefWidth="100.0" text="Приход" />
+                        <TableColumn styleClass="creditColumn" fx:id="schedCredCol" maxWidth="100.0" minWidth="100.0" prefWidth="100.0" text="Приход" />
                      </columns>
                      <columnResizePolicy>
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -72,9 +72,9 @@
                   </TableView>
                   <TableView fx:id="schedDebTable" GridPane.columnIndex="1">
                      <columns>
-                        <TableColumn fx:id="schedDebCol" maxWidth="100.0" minWidth="100.0" prefWidth="100.0" text="Расход" />
+                        <TableColumn styleClass="debitColumn" fx:id="schedDebCol" maxWidth="100.0" minWidth="100.0" prefWidth="100.0" text="Расход" />
                         <TableColumn fx:id="schedDebDescCol" prefWidth="75.0" text="Наименование" />
-                        <TableColumn fx:id="schedDebDayCol" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" text="День" />
+                        <TableColumn styleClass="dayColumn" fx:id="schedDebDayCol" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" text="День" />
                      </columns>
                      <columnResizePolicy>
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

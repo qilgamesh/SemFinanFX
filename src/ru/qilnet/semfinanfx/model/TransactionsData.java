@@ -29,10 +29,17 @@ public class TransactionsData {
 	 * Default constructor
 	 */
 	public TransactionsData() {
-		transactionsData = new ArrayList<>();
 		curTransactions = new MonthTransactions();
-		transactionsData.add(curTransactions);
-		updateTransactions(LocalDate.now().withDayOfMonth(1));
+		List<MonthTransactions> tmp = new ArrayList<>();
+		tmp.add(curTransactions);
+		setTransactionsData(tmp);
+	}
+
+	/**
+	 * Default constructor
+	 */
+	public TransactionsData(List<MonthTransactions> transactionsData) {
+		setTransactionsData(transactionsData);
 	}
 
 	public List<MonthTransactions> getTransactionsData() {
@@ -41,13 +48,11 @@ public class TransactionsData {
 	}
 
 	public void setTransactionsData(List<MonthTransactions> transactionsData) {
-		if (this.transactionsData == null) {
-			this.transactionsData = new ArrayList<>();
+		if (transactionsData == null) {
+			transactionsData = new ArrayList<>();
 		}
-		if (transactionsData != null) {
-			this.transactionsData = transactionsData;
-			updateTransactions(LocalDate.now().withDayOfMonth(1));
-		}
+		this.transactionsData = transactionsData;
+		updateTransactions(LocalDate.now().withDayOfMonth(1));
 	}
 
 	public ObservableList<Transaction> getDoneTransactions() {
@@ -111,6 +116,7 @@ public class TransactionsData {
 			schedTransactions = curTransactions.getMonthTransactions(true);
 			doneTransactions = curTransactions.getMonthTransactions(false);
 		}
+
 	}
 
 	private void writeChanges() {
@@ -118,19 +124,18 @@ public class TransactionsData {
 		tmpMT.getMonthTransactions().addAll(schedTransactions);
 		tmpMT.getMonthTransactions().addAll(doneTransactions);
 		if ((tmpMT.size() != curTransactions.size()) && (tmpMT.size() > 0)) {
-			boolean good = false;
+			boolean exists = false;
 			for (int i = 0; i < transactionsData.size(); i++) {
 				if (transactionsData.get(i).getMonthValue() == tmpMT.getMonthValue()) {
 					transactionsData.set(i, tmpMT);
-					good = true;
+					exists = true;
 					break;
 				}
 			}
-			if (!good) {
+			if (!exists) {
 				transactionsData.add(tmpMT);
 			}
 		}
-
 	}
 
 }

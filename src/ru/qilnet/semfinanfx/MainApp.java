@@ -4,7 +4,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.control.TabPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
@@ -24,7 +24,8 @@ import java.util.prefs.Preferences;
 public class MainApp extends Application {
 
 	private Stage primaryStage;
-	private BorderPane rootLayout;
+
+	private TabPane rootLayout;
 
 	/**
 	 * The observable list of all Transactions.
@@ -61,7 +62,7 @@ public class MainApp extends Application {
 		try {
 			// Load root layout from fxml file.
 			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(MainApp.class.getResource("view/RootLayout.fxml"));
+			loader.setLocation(MainApp.class.getResource("view/RootLayoutTabPane.fxml"));
 			rootLayout = loader.load();
 
 			// Show the scene containing the root layout.
@@ -94,8 +95,7 @@ public class MainApp extends Application {
 			loader.setLocation(MainApp.class.getResource("view/TransactionOverview.fxml"));
 			Pane transactionsOverview = loader.load();
 
-			// Set transaction overview into the center of root layout.
-			rootLayout.setCenter(transactionsOverview);
+			rootLayout.getTabs().get(0).setContent(transactionsOverview);
 
 			// Give the controller access to the main app.
 			TransactionOverviewController controller = loader.getController();
@@ -108,7 +108,7 @@ public class MainApp extends Application {
 
 	/**
 	 * Shows the transaction overview inside the root layout.
-	 */
+
 	public void showTransactionTableOverview4() {
 		try {
 			// Load transaction overview.
@@ -127,6 +127,7 @@ public class MainApp extends Application {
 			e.printStackTrace();
 		}
 	}
+	 */
 
 	/**
 	 * Returns the main stage.
