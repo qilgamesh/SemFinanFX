@@ -4,7 +4,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.TabPane;
+import javafx.scene.control.Tab;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 import ru.qilnet.semfinanfx.model.Transaction;
 import ru.qilnet.semfinanfx.model.TransactionsData;
 import ru.qilnet.semfinanfx.model.TransactionsDataWrapper;
+import ru.qilnet.semfinanfx.view.RootLayout;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
@@ -25,7 +26,7 @@ public class MainApp extends Application {
 
 	private Stage primaryStage;
 
-	private TabPane rootLayout;
+	private RootLayout rootLayout;
 
 	/**
 	 * The observable list of all Transactions.
@@ -59,6 +60,26 @@ public class MainApp extends Application {
 	 * Initializes the root layout.
 	 */
 	public void initRootLayout() {
+
+		rootLayout = new RootLayout();
+		Scene scene = new Scene(rootLayout);
+		primaryStage.setScene(scene);
+
+		RootLayoutController controller = new RootLayoutController();
+
+		// Give the controller access to the main app.
+		controller.setMainApp(this);
+		primaryStage.show();
+
+		// Try to load last opened transaction file.
+		File file = getTransactionFilePath();
+		if (file != null) {
+			loadTransactionData(file);
+		} else {
+			transactionsData = new TransactionsData();
+		}
+
+/* old method to load rootLayout from fxml
 		try {
 			// Load root layout from fxml file.
 			FXMLLoader loader = new FXMLLoader();
@@ -74,15 +95,13 @@ public class MainApp extends Application {
 			controller.setMainApp(this);
 
 			primaryStage.show();
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
-		// Try to load last opened transaction file.
-		File file = getTransactionFilePath();
-		if (file != null) {
-			loadTransactionData(file);
-		}
+*/
+
 	}
 
 	/**
@@ -95,10 +114,11 @@ public class MainApp extends Application {
 			loader.setLocation(MainApp.class.getResource("view/TransactionOverview.fxml"));
 			Pane transactionsOverview = loader.load();
 
-			rootLayout.getTabs().get(0).setContent(transactionsOverview);
+			Tab tab = new Tab("Главная", transactionsOverview);
+			rootLayout.addTab(tab);
 
-			// Give the controller access to the main app.
 			TransactionOverviewController controller = loader.getController();
+			// Give the controller access to the main app.
 			controller.setMainApp(this);
 
 		} catch (IOException e) {
@@ -106,8 +126,7 @@ public class MainApp extends Application {
 		}
 	}
 
-	/**
-	 * Shows the transaction overview inside the root layout.
+	/*
 
 	public void showTransactionTableOverview4() {
 		try {
