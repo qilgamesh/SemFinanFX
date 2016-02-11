@@ -1,10 +1,10 @@
 package ru.qilnet.mvcfx.view.intellect;
 
-import ru.rsdn.mvc.controller.intellect.Controller;
-import ru.rsdn.mvc.controller.intellect.ListController;
-import ru.rsdn.mvc.model.ListModel;
-import ru.rsdn.mvc.model.Model;
-import ru.rsdn.mvc.view.BaseView;
+import ru.qilnet.mvcfx.controller.intellect.Controller;
+import ru.qilnet.mvcfx.controller.intellect.ListController;
+import ru.qilnet.mvcfx.model.ListModel;
+import ru.qilnet.mvcfx.model.Model;
+import ru.qilnet.mvcfx.view.BaseView;
 
 import java.util.Collection;
 

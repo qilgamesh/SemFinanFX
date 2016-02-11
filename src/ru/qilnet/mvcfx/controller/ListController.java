@@ -11,8 +11,7 @@ import java.util.Collection;
  *
  * @param <P> свойство модели
  */
-public class ListController<P> implements
-		IController<ListController.O, ListModel<P>, Collection<Model<P>>> {
+public class ListController<P> implements IController<ListController.O, ListModel<P>, Collection<Model<P>>> {
 	/**
 	 * Операции над моделью списка
 	 */

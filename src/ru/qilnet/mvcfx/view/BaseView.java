@@ -9,8 +9,7 @@ import ru.qilnet.mvcfx.model.Model;
  * @param <M> модель
  * @param <P> свойство модели
  */
-public abstract class BaseView<M extends Model<P>, P> implements
-		IModelSubscriber<P> {
+public abstract class BaseView<M extends Model<P>, P> implements IModelSubscriber<P> {
 	private M model;
 
 	/**
@@ -46,7 +45,7 @@ public abstract class BaseView<M extends Model<P>, P> implements
 	 */
 	private void unSubscribe() {
 		if (model != null)
-			model.unsubscribe(this);
+			model.unSubscribe(this);
 	}
 
 	/**

@@ -12,11 +12,10 @@ import java.util.Collection;
  *
  * @param <P> свойство модели
  */
-public abstract class MyListView<P> extends
-		BaseView<ListModel<P>, Collection<Model<P>>> {
-	private final Controller<P> controller = new Controller<P>();
+public abstract class MyListView<P> extends BaseView<ListModel<P>, Collection<Model<P>>> {
+	private final Controller<P> controller = new Controller<>();
 
-	private final ListController<P> listController = new ListController<P>();
+	private final ListController<P> listController = new ListController<>();
 
 	/**
 	 * Редактировать модель

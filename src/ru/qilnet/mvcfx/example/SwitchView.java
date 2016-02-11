@@ -1,7 +1,5 @@
 package ru.qilnet.mvcfx.example;
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
@@ -30,10 +28,10 @@ public class SwitchView extends View<Switch> {
 		gridPane.setPadding(new Insets(5));
 		gridPane.setHgap(10);
 		gridPane.setVgap(10);
-		ColumnConstraints col1 = new ColumnConstraints(150, 150,
+		ColumnConstraints col1 = new ColumnConstraints(100, 100,
 				Double.MAX_VALUE);
-		ColumnConstraints col2 = new ColumnConstraints(50);
-		ColumnConstraints col3 = new ColumnConstraints(150, 150,
+		ColumnConstraints col2 = new ColumnConstraints(100);
+		ColumnConstraints col3 = new ColumnConstraints(100, 100,
 				Double.MAX_VALUE);
 		col1.setHgrow(Priority.ALWAYS);
 		col3.setHgrow(Priority.ALWAYS);
@@ -44,20 +42,10 @@ public class SwitchView extends View<Switch> {
 		gridPane.add(label, 0, 0);
 
 		final Button onButton = new Button("Включить");
-		onButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				edit(new Switch(true));
-			}
-		});
+		onButton.setOnAction(event -> edit(new Switch(true)));
 
 		final Button offButton = new Button("Выключить");
-		offButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				edit(new Switch(false));
-			}
-		});
+		offButton.setOnAction(event -> edit(new Switch(false)));
 
 
 		gridPane.add(onButton, 1, 0);

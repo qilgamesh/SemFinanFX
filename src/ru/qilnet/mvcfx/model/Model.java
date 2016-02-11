@@ -11,7 +11,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class Model<P> {
 	private P property;
 
-	private final Collection<IModelSubscriber<P>> subscribers = new CopyOnWriteArrayList<IModelSubscriber<P>>();
+	private final Collection<IModelSubscriber<P>> subscribers = new CopyOnWriteArrayList<>();
 
 	/**
 	 * Конструктор
@@ -49,8 +49,7 @@ public class Model<P> {
 	 * Оповестить всех подписчиков
 	 */
 	protected void notifySubscribers() {
-		for (final IModelSubscriber<P> subscriber : subscribers)
-			notifySubscriber(subscriber);
+		subscribers.forEach(this::notifySubscriber);
 	}
 
 	/**
@@ -83,7 +82,7 @@ public class Model<P> {
 	 *
 	 * @param subscriber подписчик модели
 	 */
-	public void unsubscribe(IModelSubscriber<P> subscriber) {
+	public void unSubscribe(IModelSubscriber<P> subscriber) {
 		if (subscriber == null)
 			throw new NullPointerException("Пустой параметр");
 		if (!subscribers.contains(subscriber))

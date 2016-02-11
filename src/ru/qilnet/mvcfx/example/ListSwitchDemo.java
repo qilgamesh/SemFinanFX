@@ -15,7 +15,7 @@ public class ListSwitchDemo extends Application {
 	public void start(Stage primaryStage) throws Exception {
 
 		final ListSwitchView view = new ListSwitchView();
-		view.setModel(new ListModel<Switch>());
+		view.setModel(new ListModel<>());
 
 		Parent root = view.getListSwitchView();
 

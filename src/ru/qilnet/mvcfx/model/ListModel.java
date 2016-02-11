@@ -8,13 +8,13 @@ import java.util.HashSet;
  *
  * @param <P> свойство модели
  */
-public class ListModel<P> extends Model<Collection<Model<P>>> implements
-		IModelSubscriber<P> {
+public class ListModel<P> extends Model<Collection<Model<P>>> implements IModelSubscriber<P> {
+
 	/**
 	 * Конструктор
 	 */
 	public ListModel() {
-		super(new HashSet<Model<P>>());
+		super(new HashSet<>());
 	}
 
 	/**
@@ -44,7 +44,7 @@ public class ListModel<P> extends Model<Collection<Model<P>>> implements
 	public void remove(Model<P> model) {
 		if (model == null)
 			throw new NullPointerException("Пустой параметр");
-		model.unsubscribe(this);
+		model.unSubscribe(this);
 		getProperty().remove(model);
 		notifySubscribers();
 	}
