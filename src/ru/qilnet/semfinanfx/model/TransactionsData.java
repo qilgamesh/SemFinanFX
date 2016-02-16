@@ -59,6 +59,27 @@ public class TransactionsData {
 		return doneTransactions;
 	}
 
+	public ObservableList<Transaction> getDoneTransactions(type t) {
+		if (doneTransactions.size() > 0) {
+			ObservableList<Transaction> tmpList = FXCollections.observableArrayList();
+			for (Transaction tr : doneTransactions) {
+				switch (t) {
+					case CREDIT:
+						if (tr.getCreditSum() != null) {
+							tmpList.add(tr);
+						}
+						break;
+					case DEBIT:
+						if (tr.getDebitSum() != null) {
+							tmpList.add(tr);
+						}
+						break;
+				}
+			}
+			return tmpList;
+		}
+		return doneTransactions;
+	}
 	/**
 	 * If no params returns all sheduled transactions
 	 *

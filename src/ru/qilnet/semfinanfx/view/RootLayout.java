@@ -14,7 +14,9 @@ public class RootLayout extends BorderPane {
 	private TabPane rootTabPane;
 
 	public RootLayout() {
-		rootTabPane = new TabPane(new Tab("test"));
+		rootTabPane = new TabPane();
+		rootTabPane.setMinWidth(900);
+		rootTabPane.setMinHeight(600);
 		setCenter(rootTabPane);
 	}
 

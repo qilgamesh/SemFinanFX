@@ -111,13 +111,13 @@ public class MainApp extends Application {
 		try {
 			// Load transaction overview.
 			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(MainApp.class.getResource("view/TransactionOverview.fxml"));
+			loader.setLocation(MainApp.class.getResource("view/TransactionOverview4.fxml"));
 			Pane transactionsOverview = loader.load();
 
 			Tab tab = new Tab("Главная", transactionsOverview);
 			rootLayout.addTab(tab);
 
-			TransactionOverviewController controller = loader.getController();
+			TransactionOverviewController4 controller = loader.getController();
 			// Give the controller access to the main app.
 			controller.setMainApp(this);
 
